@@ -1,0 +1,82 @@
+[
+    {
+        "model": "notice.NoticeStore",
+        "pk": 1,
+        "fields": {
+            "created_at": "2022-04-04 00:00:00+00",
+            "updated_at": "2022-04-04 00:00:00+00",
+            "is_deleted": false,
+            "title": "title1",
+            "content": "content1",
+            "notice_type_id": 1,
+            "receiver_type": 1,
+            "is_draft": true,
+            "creator_id": 1,
+            "publish_at": null
+        }
+    },
+    {
+        "model": "notice.NoticeStore",
+        "pk": 2,
+        "fields": {
+            "created_at": "2022-04-04 00:00:00+00",
+            "updated_at": "2022-04-04 00:00:00+00",
+            "is_deleted": true,
+            "title": "title2",
+            "content": "content2",
+            "notice_type_id": 1,
+            "receiver_type": 3,
+            "is_draft": false,
+            "creator_id": 1,
+            "publish_at": "2022-04-04 00:00:00+00"
+        }
+    },
+    {
+        "model": "notice.NoticeStore",
+        "pk": 3,
+        "fields": {
+            "created_at": "2022-04-04 00:00:00+00",
+            "updated_at": "2022-04-04 00:00:00+00",
+            "is_deleted": false,
+            "title": "title3",
+            "content": "content3",
+            "notice_type_id": 3,
+            "receiver_type": 1,
+            "is_draft": false,
+            "creator_id": 1,
+            "publish_at": "2099-04-04 00:00:00+00"
+        }
+    },
+    {
+        "model": "notice.NoticeStore",
+        "pk": 4,
+        "fields": {
+            "created_at": "2022-04-04 00:00:00+00",
+            "updated_at": "2022-04-04 00:00:00+00",
+            "is_deleted": false,
+            "title": "title4",
+            "content": "content4",
+            "notice_type_id": 3,
+            "receiver_type": 3,
+            "is_draft": false,
+            "creator_id": 1,
+            "publish_at": "2022-04-04 00:00:00+00"
+        }
+    },
+    {
+        "model": "notice.NoticeStore",
+        "pk": 5,
+        "fields": {
+            "created_at": "2022-04-04 00:00:00+00",
+            "updated_at": "2022-04-04 00:00:00+00",
+            "is_deleted": false,
+            "title": "title5",
+            "content": "content5",
+            "notice_type_id": 3,
+            "receiver_type": 3,
+            "is_draft": false,
+            "creator_id": 1,
+            "publish_at": "2022-04-04 00:00:00+00"
+        }
+    }
+]

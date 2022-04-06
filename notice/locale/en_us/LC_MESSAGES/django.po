@@ -1,0 +1,154 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-04-06 10:28+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: forms.py:28
+msgid "No"
+msgstr "dont send"
+
+#: forms.py:29
+msgid "Now"
+msgstr "send right now"
+
+#: forms.py:30
+msgid "Timing"
+msgstr "timing send"
+
+#: models.py:17
+msgid "create time"
+msgstr "create time"
+
+#: models.py:18
+msgid "latest update time"
+msgstr "the latest update time"
+
+#: models.py:30
+msgid "delete tag"
+msgstr "delete tag"
+
+#: models.py:39
+msgid "name"
+msgstr "name"
+
+#: models.py:40
+msgid "description"
+msgstr "description"
+
+#: models.py:56
+msgid "title"
+msgstr "title"
+
+#: models.py:57
+msgid "content"
+msgstr "content"
+
+#: models.py:58
+msgid "notice type"
+msgstr "notice type"
+
+#: models.py:59
+msgid "receiver type"
+msgstr "receiver type"
+
+#: models.py:60
+msgid "draft tag"
+msgstr "draft tag"
+
+#: models.py:61
+msgid "creator id"
+msgstr "creator id"
+
+#: models.py:62
+msgid "publish time"
+msgstr "publish time"
+
+#: models.py:70
+msgid "Draft"
+msgstr "draft"
+
+#: models.py:71
+msgid "Queue"
+msgstr "ready to send"
+
+#: models.py:72
+msgid "Done"
+msgstr "has been sent"
+
+#: models.py:91
+msgid "notice"
+msgstr "notice"
+
+#: models.py:92
+msgid "receiver"
+msgstr "receiver"
+
+#: models.py:93
+msgid "read time"
+msgstr "read time"
+
+#: response.py:53
+msgid "Invalid Notice Type"
+msgstr "invalid notice type"
+
+#: response.py:54
+msgid "Invalid Receiver Type"
+msgstr "invalid receiver type"
+
+#: response.py:55
+msgid "Invalid Send Way"
+msgstr "invalid send way"
+
+#: response.py:56
+msgid "Invalid Publish Time"
+msgstr "invalid publish time"
+
+#: response.py:57
+msgid "Invalid Page"
+msgstr "invalid page"
+
+#: response.py:58
+msgid "Invalid Size"
+msgstr "invalid size"
+
+#: response.py:60
+msgid "Cant Set Time Which Is Out Of Date"
+msgstr "cant set time which is out of date"
+
+#: response.py:61
+msgid "Cant Change Notice Which Is Not Draft"
+msgstr "cant change notice which is not draft"
+
+#: response.py:62
+msgid "Cant Change Timing Which Is Draft"
+msgstr "cant change timing which is draft"
+
+#: response.py:63
+msgid "Cant Delete Timing Which Is Draft"
+msgstr "cant delete timing which is draft"
+
+#: response.py:64
+msgid "Cant Delete Notice Which Is Not Draft"
+msgstr "cant delete notice which is not draft"
+
+#: response.py:65
+msgid "Cant Change Notice Which Has Been published"
+msgstr "cant change notice which has been published"
+
+#: response.py:66
+msgid "Cant Delete Notice Which Has Been published"
+msgstr "cant delete notice which has been published"
