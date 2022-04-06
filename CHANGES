@@ -1,6 +1,10 @@
 Version History
 ===============
 
+Version 0.1.1
+--------------
+* split client function
+* judge class add kwargs argument
 
 Version 0.1.0
 --------------

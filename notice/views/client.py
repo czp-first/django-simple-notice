@@ -15,23 +15,8 @@ from notice.models import NoticeStore, ReceiverTag
 from notice.response import AuthFailed, NotFound, ValidationFailed, ValidationFailedDetailEnum
 
 
-@require_GET
-def list_notice(request: HttpRequest):
-    if not request.user.is_authenticated:
-        return AuthFailed()
-
-    params = request.GET
-    page = params.get('page', '1')
-    if not page.isdigit():
-        return ValidationFailed(ValidationFailedDetailEnum.PAGE.value)
-    page = int(page)
-
-    size = params.get('size', '10')
-    if not size.isdigit():
-        return ValidationFailed(ValidationFailedDetailEnum.SIZE.value)
-    size = int(size)
-
-    allowed_notice_type_ids, allowed_receiver_type_ids = NOTICE_ALLOWED_TYPED_CLASS(receiver_id=request.user.pk).judge()
+def get_page_notice(receiver_id, page, size, **kwargs):
+    allowed_notice_type_ids, allowed_receiver_type_ids = NOTICE_ALLOWED_TYPED_CLASS(receiver_id=receiver_id, **kwargs).judge()
     if not allowed_notice_type_ids or not allowed_receiver_type_ids:
         return JsonResponse(data={
             'total': 0,
@@ -63,23 +48,35 @@ def list_notice(request: HttpRequest):
         ).order_by('-id')[(page-1)*size: page*size]
     ] if page <= max_page else []
 
-    resp = {
+    return JsonResponse(data={
         'total': total,
         'max_page': max_page,
         'page': page,
         'items': items
-    }
-    return JsonResponse(data=resp)
+    })
 
 
 @require_GET
-def some_notice(request: HttpRequest, pk: int):
+def list_notice(request: HttpRequest):
     if not request.user.is_authenticated:
         return AuthFailed()
 
-    receiver_id = request.user.pk
+    params = request.GET
+    page = params.get('page', '1')
+    if not page.isdigit():
+        return ValidationFailed(ValidationFailedDetailEnum.PAGE.value)
+    page = int(page)
 
-    allowed_notice_type_ids, allowed_receiver_type_ids = NOTICE_ALLOWED_TYPED_CLASS(receiver_id).judge()
+    size = params.get('size', '10')
+    if not size.isdigit():
+        return ValidationFailed(ValidationFailedDetailEnum.SIZE.value)
+    size = int(size)
+
+    return get_page_notice(request.user.pk, page, size)
+
+
+def retrieve_notice(receiver_id, pk, **kwargs):
+    allowed_notice_type_ids, allowed_receiver_type_ids = NOTICE_ALLOWED_TYPED_CLASS(receiver_id, **kwargs).judge()
     if not allowed_notice_type_ids or not allowed_receiver_type_ids:
         return NotFound()
 
@@ -112,3 +109,11 @@ def some_notice(request: HttpRequest, pk: int):
         'publish_at': notice.published_at,
     }
     return JsonResponse(data=resp)
+
+
+@require_GET
+def some_notice(request: HttpRequest, pk: int):
+    if not request.user.is_authenticated:
+        return AuthFailed()
+
+    return retrieve_notice(request.user.pk, pk)
