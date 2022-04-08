@@ -8,6 +8,7 @@ from enum import Enum
 
 from django import forms
 from django.conf import settings
+from django.contrib.postgres.forms.array import SimpleArrayField
 from django.core.exceptions import ValidationError
 from django.utils.timezone import get_default_timezone, now as timezone_now
 from django.utils.translation import gettext_lazy as _
@@ -33,7 +34,7 @@ class NoticeForm(forms.Form):
     title = forms.CharField(required=False, max_length=64)
     content = forms.CharField(required=False, widget=forms.Textarea)
     type_id = forms.IntegerField(required=False, min_value=1)
-    receiver_type_id = forms.IntegerField(required=False, min_value=1)
+    receiver_type_ids = SimpleArrayField(required=False, base_field=forms.IntegerField(required=False, min_value=1))
     send_way = forms.ChoiceField(required=True, choices=SendWayChoices)
     publish_at = forms.DateTimeField(required=False, input_formats=[NOTICE_DATETIME_FORMAT])
 
@@ -45,13 +46,14 @@ class NoticeForm(forms.Form):
             raise ValidationError(ValidationFailedDetailEnum.NOTICE_TYPE.value)
         return type_id
 
-    def clean_receiver_type_id(self):
-        receiver_type_id = self.cleaned_data['receiver_type_id']
-        if not receiver_type_id:
-            return receiver_type_id
-        if not ReceiverType.objects.filter(pk=receiver_type_id).exists():
+    def clean_receiver_type_ids(self):
+        receiver_type_ids = self.cleaned_data['receiver_type_ids']
+        if not receiver_type_ids:
+            return receiver_type_ids
+        right_ids = ReceiverType.objects.filter(pk__in=receiver_type_ids).values_list('id', flat=True)
+        if set(receiver_type_ids) != set(right_ids):
             raise ValidationError(ValidationFailedDetailEnum.RECEIVER_TYPE.value)
-        return receiver_type_id
+        return receiver_type_ids
 
     def clean_publish_at(self):
         send_way = self.cleaned_data.get('send_way')

@@ -63,38 +63,41 @@ class AdminListNoticeCase(TestCase):
         resp = self.client.get(reverse('admin-notice'))
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        self.assertEqual(resp_json['total'], 4)
-        self.assertEqual(resp_json['max_page'], 1)
+        self.assertEqual(resp_json['total'], 12)
+        self.assertEqual(resp_json['max_page'], 2)
         self.assertEqual(resp_json['page'], 1)
         items = resp_json['items']
-        self.assertEqual(len(items), 4)
+        self.assertEqual(len(items), 10)
 
         # assert done notice
-        self.assertEqual(items[0]['id'], 5)
-        self.assertEqual(items[0]['title'], 'title5')
+        self.assertEqual(items[0]['id'], 15)
+        self.assertEqual(items[0]['title'], 'title15')
         self.assertEqual(items[0]['type'], 'PRIVATE')
-        self.assertEqual(items[0]['status'], 'has been sent')
+        self.assertEqual(items[0]['status'], NoticeStore.StatusEnum.DONE.value)
+        self.assertEqual(items[0]['status_desc'], NoticeStore.StatusLabel[NoticeStore.StatusEnum.DONE])
 
         # assert queue notice
-        self.assertEqual(items[2]['id'], 3)
-        self.assertEqual(items[2]['title'], 'title3')
+        self.assertEqual(items[2]['id'], 13)
+        self.assertEqual(items[2]['title'], 'title13')
         self.assertEqual(items[2]['type'], 'PRIVATE')
-        self.assertEqual(items[2]['status'], 'ready to send')
+        self.assertEqual(items[2]['status'], NoticeStore.StatusEnum.QUEUE.value)
+        self.assertEqual(items[2]['status_desc'], NoticeStore.StatusLabel[NoticeStore.StatusEnum.QUEUE])
 
         # assert draft notice
-        self.assertEqual(items[3]['id'], 1)
-        self.assertEqual(items[3]['title'], 'title1')
+        self.assertEqual(items[3]['id'], 11)
+        self.assertEqual(items[3]['title'], 'title11')
         self.assertEqual(items[3]['type'], 'SYSTEM')
-        self.assertEqual(items[3]['status'], 'draft')
+        self.assertEqual(items[3]['status'], NoticeStore.StatusEnum.DRAFT.value)
+        self.assertEqual(items[3]['status_desc'], NoticeStore.StatusLabel[NoticeStore.StatusEnum.DRAFT])
 
     def test_page_no_data(self):
-        data = {'page': 2, 'size': 10}
+        data = {'page': 3, 'size': 10}
         resp = self.client.get(reverse('admin-notice'), data=data)
         self.assertEqual(resp.status_code, 200)
         resp_json = resp.json()
-        self.assertEqual(resp_json['total'], 4)
-        self.assertEqual(resp_json['max_page'], 1)
-        self.assertEqual(resp_json['page'], 2)
+        self.assertEqual(resp_json['total'], 12)
+        self.assertEqual(resp_json['max_page'], 2)
+        self.assertEqual(resp_json['page'], 3)
         self.assertListEqual(resp_json['items'], [])
 
 
@@ -112,7 +115,7 @@ class AdminCreateNoticeCase(TestCase):
         data = {
             'title': title,
             'content': content,
-            'receiver_type_id': 1,
+            'receiver_type_ids': [1],
             'send_way': NoticeForm.SendWayEnum.NO.value,
             'publish_at': None,
             'type_id': 1
@@ -123,7 +126,7 @@ class AdminCreateNoticeCase(TestCase):
         notice: NoticeStore = NoticeStore.objects.get(pk=resp_json['id'])
         self.assertEqual(notice.title, title)
         self.assertEqual(notice.content, content)
-        self.assertEqual(notice.receiver_type_id, 1)
+        self.assertEqual(notice.receiver_type_ids, [1])
         self.assertEqual(notice.notice_type_id, 1)
         self.assertEqual(notice.status, NoticeStore.StatusEnum.DRAFT)
 
@@ -134,7 +137,7 @@ class AdminCreateNoticeCase(TestCase):
         data = {
             'title': title,
             'content': content,
-            'receiver_type_id': 1,
+            'receiver_type_ids': [1],
             'send_way': NoticeForm.SendWayEnum.TIMING.value,
             'publish_at': (timezone_now()+timedelta(days=2)).strftime(NOTICE_DATETIME_FORMAT),
             'type_id': 1
@@ -145,7 +148,7 @@ class AdminCreateNoticeCase(TestCase):
         notice: NoticeStore = NoticeStore.objects.get(pk=resp_json['id'])
         self.assertEqual(notice.title, title)
         self.assertEqual(notice.content, content)
-        self.assertEqual(notice.receiver_type_id, 1)
+        self.assertEqual(notice.receiver_type_ids, [1])
         self.assertEqual(notice.notice_type_id, 1)
         self.assertEqual(notice.status, NoticeStore.StatusEnum.QUEUE)
 
@@ -156,7 +159,7 @@ class AdminCreateNoticeCase(TestCase):
         data = {
             'title': title,
             'content': content,
-            'receiver_type_id': 1,
+            'receiver_type_ids': [1],
             'send_way': NoticeForm.SendWayEnum.NOW.value,
             'publish_at': (timezone_now()+timedelta(days=2)).strftime(NOTICE_DATETIME_FORMAT),
             'type_id': 1
@@ -167,7 +170,7 @@ class AdminCreateNoticeCase(TestCase):
         notice: NoticeStore = NoticeStore.objects.get(pk=resp_json['id'])
         self.assertEqual(notice.title, title)
         self.assertEqual(notice.content, content)
-        self.assertEqual(notice.receiver_type_id, 1)
+        self.assertEqual(notice.receiver_type_ids, [1])
         self.assertEqual(notice.notice_type_id, 1)
         self.assertEqual(notice.status, NoticeStore.StatusEnum.DONE)
 
@@ -182,6 +185,8 @@ class AdminRetrieveNoticeCase(TestCase):
         self.assertEqual(resp_json['title'], 'title1')
         self.assertEqual(resp_json['content'], 'content1')
         self.assertIsNone(resp_json['publish_at'])
+        self.assertListEqual(resp_json['receiver_type_ids'], [1])
+        self.assertEqual(resp_json['type_id'], 1)
 
     def test_queue(self):
         resp = self.client.get(reverse('admin-some-notice', kwargs={'pk': 3}))
@@ -190,6 +195,8 @@ class AdminRetrieveNoticeCase(TestCase):
         self.assertEqual(resp_json['title'], 'title3')
         self.assertEqual(resp_json['content'], 'content3')
         self.assertIsNone(resp_json['publish_at'])
+        self.assertListEqual(resp_json['receiver_type_ids'], [1])
+        self.assertEqual(resp_json['type_id'], 3)
 
     def test_done(self):
         resp = self.client.get(reverse('admin-some-notice', kwargs={'pk': 4}))
@@ -198,6 +205,8 @@ class AdminRetrieveNoticeCase(TestCase):
         self.assertEqual(resp_json['title'], 'title4')
         self.assertEqual(resp_json['content'], 'content4')
         self.assertIsNotNone(resp_json['publish_at'])
+        self.assertListEqual(resp_json['receiver_type_ids'], [1])
+        self.assertEqual(resp_json['type_id'], 3)
 
     def test_deleted(self):
         resp = self.client.get(reverse('admin-some-notice', kwargs={'pk': 2}))
@@ -219,13 +228,13 @@ class AdminPutNoticeCase(TestCase):
         """turn draft to queue"""
         title = 'title11'
         content = 'content11'
-        receiver_type_id = 3
+        receiver_type_ids = [3]
         type_id = 3
         publish_at = (timezone_now()+timedelta(days=22)).strftime(NOTICE_DATETIME_FORMAT)
         data = {
             'title': title,
             'content': content,
-            'receiver_type_id': receiver_type_id,
+            'receiver_type_ids': receiver_type_ids,
             'send_way': NoticeForm.SendWayEnum.TIMING.value,
             'publish_at': publish_at,
             'type_id': type_id
@@ -236,7 +245,7 @@ class AdminPutNoticeCase(TestCase):
         notice: NoticeStore = NoticeStore.objects.get(pk=pk)
         self.assertEqual(notice.title, title)
         self.assertEqual(notice.content, content)
-        self.assertEqual(notice.receiver_type_id, receiver_type_id)
+        self.assertEqual(notice.receiver_type_ids, receiver_type_ids)
         self.assertEqual(notice.notice_type_id, type_id)
         self.assertEqual(notice.publish_at.strftime(NOTICE_DATETIME_FORMAT), publish_at)
         self.assertEqual(notice.status, NoticeStore.StatusEnum.QUEUE)
@@ -245,13 +254,13 @@ class AdminPutNoticeCase(TestCase):
         """turn draft to draft"""
         title = 'title11'
         content = 'content11'
-        receiver_type_id = 3
+        receiver_type_ids = [3]
         type_id = 3
         publish_at = (timezone_now()+timedelta(days=22)).strftime(NOTICE_DATETIME_FORMAT)
         data = {
             'title': title,
             'content': content,
-            'receiver_type_id': receiver_type_id,
+            'receiver_type_ids': receiver_type_ids,
             'send_way': NoticeForm.SendWayEnum.NO.value,
             'publish_at': publish_at,
             'type_id': type_id
@@ -262,7 +271,7 @@ class AdminPutNoticeCase(TestCase):
         notice: NoticeStore = NoticeStore.objects.get(pk=pk)
         self.assertEqual(notice.title, title)
         self.assertEqual(notice.content, content)
-        self.assertEqual(notice.receiver_type_id, receiver_type_id)
+        self.assertEqual(notice.receiver_type_ids, receiver_type_ids)
         self.assertIsNone(notice.publish_at)
         self.assertEqual(notice.notice_type_id, type_id)
         self.assertEqual(notice.status, NoticeStore.StatusEnum.DRAFT)
@@ -271,13 +280,13 @@ class AdminPutNoticeCase(TestCase):
         """turn draft to done"""
         title = 'title11'
         content = 'content11'
-        receiver_type_id = 3
+        receiver_type_ids = [3]
         type_id = 3
         publish_at = (timezone_now()+timedelta(days=22)).strftime(NOTICE_DATETIME_FORMAT)
         data = {
             'title': title,
             'content': content,
-            'receiver_type_id': receiver_type_id,
+            'receiver_type_ids': receiver_type_ids,
             'send_way': NoticeForm.SendWayEnum.NOW.value,
             'publish_at': publish_at,
             'type_id': type_id
@@ -288,19 +297,19 @@ class AdminPutNoticeCase(TestCase):
         notice: NoticeStore = NoticeStore.objects.get(pk=pk)
         self.assertEqual(notice.title, title)
         self.assertEqual(notice.content, content)
-        self.assertEqual(notice.receiver_type_id, receiver_type_id)
+        self.assertEqual(notice.receiver_type_ids, receiver_type_ids)
         self.assertEqual(notice.status, NoticeStore.StatusEnum.DONE)
 
     def test_queue(self):
         title = 'title11'
         content = 'content11'
-        receiver_type_id = 3
+        receiver_type_ids = [3]
         type_id = 3
         publish_at = (timezone_now()+timedelta(days=22)).strftime(NOTICE_DATETIME_FORMAT)
         data = {
             'title': title,
             'content': content,
-            'receiver_type_id': receiver_type_id,
+            'receiver_type_ids': receiver_type_ids,
             'send_way': NoticeForm.SendWayEnum.NOW.value,
             'publish_at': publish_at,
             'type_id': type_id
@@ -312,13 +321,13 @@ class AdminPutNoticeCase(TestCase):
     def test_done(self):
         title = 'title11'
         content = 'content11'
-        receiver_type_id = 3
+        receiver_type_ids = [3]
         type_id = 3
         publish_at = (timezone_now()+timedelta(days=22)).strftime(NOTICE_DATETIME_FORMAT)
         data = {
             'title': title,
             'content': content,
-            'receiver_type_id': receiver_type_id,
+            'receiver_type_ids': receiver_type_ids,
             'send_way': NoticeForm.SendWayEnum.NOW.value,
             'publish_at': publish_at,
             'type_id': type_id
@@ -403,16 +412,20 @@ class ClientListNotice(TestCase):
         self.client.login(username='testuser', password='123456')
         resp = self.client.get(reverse('client-list-notice'))
         resp_json = resp.json()
-        self.assertEqual(resp_json['total'], 2)
+        self.assertEqual(resp_json['total'], 4)
         self.assertEqual(resp_json['max_page'], 1)
         self.assertEqual(resp_json['page'], 1)
 
         items = resp_json['items']
-        self.assertEqual(len(items), 2)
-        self.assertEqual(items[0]['id'], 5)
+        self.assertEqual(len(items), 4)
+        self.assertEqual(items[0]['id'], 15)
         self.assertTrue(items[0]['is_read'])
-
+        self.assertEqual(items[1]['id'], 14)
         self.assertFalse(items[1]['is_read'])
+        self.assertEqual(items[2]['id'], 5)
+        self.assertTrue(items[2]['is_read'])
+        self.assertEqual(items[3]['id'], 4)
+        self.assertFalse(items[3]['is_read'])
 
 
 class ClientRetreiveNotice(TestCase):
@@ -435,6 +448,10 @@ class ClientRetreiveNotice(TestCase):
 
     def test_queue(self):
         resp = self.client_request(3)
+        self.assertEqual(resp.status_code, 404)
+
+    def test_cant_read(self):
+        resp = self.client_request(9)
         self.assertEqual(resp.status_code, 404)
 
     def test_unread(self):

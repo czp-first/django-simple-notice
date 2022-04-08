@@ -11,14 +11,15 @@ from django.apps import apps
 
 class BaseGetAllowedTypes(metaclass=ABCMeta):
     """include receiver types and notice types"""
-    def __init__(self, receiver_id, **kwargs) -> None:
+    def __init__(self, receiver_id: int, judge_kwargs: dict = dict()) -> None:
         if not isinstance(receiver_id, int):
             raise TypeError('invalid type: receiver user id')
         self.receiver_id = receiver_id
         self.done_receiver_type = list()
         self.done_notice_type = list()
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+        if judge_kwargs:
+            for key, value in judge_kwargs.items():
+                setattr(self, key, value)
 
     @staticmethod
     def get_all_notice_type_names():
@@ -37,4 +38,4 @@ class BaseGetAllowedTypes(metaclass=ABCMeta):
         pass
 
     def judge(self):
-        return self.judge_notice_receiver_types(), self.judge_notice_types()
+        return self.judge_notice_types(), self.judge_notice_receiver_types()

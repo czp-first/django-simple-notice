@@ -6,6 +6,7 @@
 """
 from enum import Enum
 
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -56,7 +57,7 @@ class NoticeStore(BaseTimeModel, IsDeletedModel):
     title = models.CharField(null=True, max_length=64, verbose_name=_('title'))
     content = models.TextField(null=True, verbose_name=_('content'))
     notice_type = models.ForeignKey(NoticeType, on_delete=models.CASCADE, verbose_name=_('notice type'))
-    receiver_type = models.ForeignKey(ReceiverType, on_delete=models.CASCADE, verbose_name=_('receiver type'))
+    receiver_type_ids = ArrayField(models.IntegerField(), null=True, verbose_name=_('receiver type'))
     is_draft = models.BooleanField(default=True, verbose_name=_('draft tag'))
     creator_id = models.IntegerField(verbose_name=_('creator id'))
     publish_at = models.DateTimeField(null=True, verbose_name=_('publish time'))

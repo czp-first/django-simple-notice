@@ -36,8 +36,8 @@ class ExampleGetAllowedViewTypes(BaseGetAllowedTypes):
             allowed_receiver_type_ids.append(all_receiver_types['all'])
 
         self.done_receiver_type.append('part')
-        if self.receiver_id:
-            allowed_receiver_type_ids.append(all_receiver_types['part'])
+        # if self.receiver_id:
+        #     allowed_receiver_type_ids.append(all_receiver_types['part'])
 
         if set(all_receiver_types) - set(self.done_receiver_type) != set():
             raise NotImplementedError(

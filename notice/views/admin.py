@@ -65,7 +65,8 @@ def list_notice(params: dict):
             'created_at': item.created_at.strftime(NOTICE_DATETIME_FORMAT),
             'publish_at': item.publish_at.strftime(NOTICE_DATETIME_FORMAT) if item.publish_at else None,
             'type': item.notice_type.desc,
-            'status': NoticeStore.StatusLabel.get(item.status)
+            'status': item.status.value,
+            'status_desc': NoticeStore.StatusLabel.get(item.status),
         }
         for item in NoticeStore.objects.all().select_related(
             'notice_type'
@@ -93,7 +94,7 @@ def notice(request: HttpRequest):
 
 def retrieve_notice(pk: int):
     notice = NoticeStore.objects.filter(pk=pk).only(
-        'is_draft', 'publish_at', 'title', 'content'
+        'is_draft', 'publish_at', 'title', 'content', 'notice_type_id', 'receiver_type_ids',
     ).first()
     if not notice:
         return NotFound()
@@ -103,6 +104,8 @@ def retrieve_notice(pk: int):
         'title': notice.title,
         'content': notice.content,
         'publish_at': notice.published_at,
+        'type_id': notice.notice_type_id,
+        'receiver_type_ids': notice.receiver_type_ids,
     }
     return JsonResponse(data=resp)
 

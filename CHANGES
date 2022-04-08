@@ -1,6 +1,12 @@
 Version History
 ===============
 
+Version 0.1.2
+--------------
+* alter table noticestore.receiver_type_ids to allow notice can have many receiver type
+* specify judge class kwargs
+* add some resp fields
+
 Version 0.1.1
 --------------
 * split client function
