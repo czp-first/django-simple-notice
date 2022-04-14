@@ -121,3 +121,23 @@ def some_notice(request: HttpRequest, pk: int):
         return AuthFailed()
 
     return retrieve_notice(request.user.pk, pk)
+
+
+def get_unread_status(receiver_id, judge_kwargs: dict =dict()):
+    allowed_notice_type_ids, allowed_receiver_type_ids = NOTICE_ALLOWED_TYPED_CLASS(receiver_id=receiver_id, judge_kwargs=judge_kwargs).judge()
+    filter_params = {
+        'is_draft': False,
+        'publish_at__lte': timezone.now(),
+        'receiver_type_ids__overlap': allowed_receiver_type_ids,
+        'notice_type_id__in': allowed_notice_type_ids,
+    }
+    total = NoticeStore.objects.filter(**filter_params).count()
+    read_total = ReceiverTag.objects.filter(receiver_id=receiver_id).count()
+    return JsonResponse(data={'is_unread': False if total == read_total else True})
+
+
+@require_GET
+def notice_status(request: HttpRequest):
+    if not request.user.is_authenticated:
+        return AuthFailed()
+    return get_unread_status(request.user.pk)

@@ -1,6 +1,10 @@
 Version History
 ===============
 
+Version 0.1.4
+--------------
+* client add view to judge whether has unread notice
+
 Version 0.1.3
 --------------
 * client query notice can filter title

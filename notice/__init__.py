@@ -4,7 +4,7 @@
 @Author  : Rey
 @Time    : 2022-04-02 14:01:49
 """
-VERSION = (0, 1, 3)
+VERSION = (0, 1, 4)
 
 
 def get_version():

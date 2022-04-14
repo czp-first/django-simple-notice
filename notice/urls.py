@@ -20,6 +20,7 @@ admin_urlpatterns = [
 client_urlpatterns = [
     path('client/', client_views.list_notice, name='client-list-notice'),
     path('client/<int:pk>/', client_views.some_notice, name='client-retrieve-notice'),
+    path('client/status/', client_views.notice_status, name='client-notice-status'),
 ]
 
 urlpatterns = admin_urlpatterns + client_urlpatterns
