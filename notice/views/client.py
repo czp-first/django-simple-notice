@@ -15,7 +15,7 @@ from notice.models import NoticeStore, ReceiverTag
 from notice.response import AuthFailed, NotFound, ValidationFailed, ValidationFailedDetailEnum
 
 
-def get_page_notice(receiver_id, page, size, judge_kwargs: dict =dict()):
+def get_page_notice(receiver_id, page, size, title=None, judge_kwargs: dict =dict()):
     allowed_notice_type_ids, allowed_receiver_type_ids = NOTICE_ALLOWED_TYPED_CLASS(receiver_id=receiver_id, judge_kwargs=judge_kwargs).judge()
     if not allowed_notice_type_ids or not allowed_receiver_type_ids:
         return JsonResponse(data={
@@ -29,8 +29,10 @@ def get_page_notice(receiver_id, page, size, judge_kwargs: dict =dict()):
         'is_draft': False,
         'publish_at__lte': timezone.now(),
         'receiver_type_ids__overlap': allowed_receiver_type_ids,
-        'notice_type_id__in': allowed_notice_type_ids
+        'notice_type_id__in': allowed_notice_type_ids,
     }
+    if title:
+        filter_params['title__contains'] = title
     total = NoticeStore.objects.filter(**filter_params).count()
     max_page = math.ceil(total / size)
 
@@ -72,7 +74,9 @@ def list_notice(request: HttpRequest):
         return ValidationFailed(ValidationFailedDetailEnum.SIZE.value)
     size = int(size)
 
-    return get_page_notice(request.user.pk, page, size)
+    title = params.get('title', '')
+
+    return get_page_notice(request.user.pk, page, size, title)
 
 
 def retrieve_notice(receiver_id, pk, judge_kwargs: dict = dict()):

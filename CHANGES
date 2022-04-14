@@ -1,6 +1,10 @@
 Version History
 ===============
 
+Version 0.1.3
+--------------
+* client query notice can filter title
+
 Version 0.1.2
 --------------
 * alter table noticestore.receiver_type_ids to allow notice can have many receiver type

@@ -30,11 +30,11 @@ class BaseGetAllowedTypes(metaclass=ABCMeta):
         return dict(apps.get_model('notice.ReceiverType').objects.all().values_list('name', 'id'))
 
     @abstractmethod
-    def judge_notice_receiver_types(self) -> tuple:
+    def judge_notice_receiver_types(self) -> list:
         pass
 
     @abstractmethod
-    def judge_notice_types(self) -> tuple:
+    def judge_notice_types(self) -> list:
         pass
 
     def judge(self):

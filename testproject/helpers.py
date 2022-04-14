@@ -9,7 +9,7 @@ from notice.helpers import BaseGetAllowedTypes
 
 class ExampleGetAllowedViewTypes(BaseGetAllowedTypes):
 
-    def judge_notice_types(self) -> tuple:
+    def judge_notice_types(self) -> list:
         all_notice_types = self.get_all_notice_type_names()
         allowed_notice_type_ids = []
 
@@ -25,9 +25,9 @@ class ExampleGetAllowedViewTypes(BaseGetAllowedTypes):
             raise NotImplementedError(
                 'not judge all existed notice types: to judge={}'.format(set(all_notice_types) - set(self.done_notice_type))
             )
-        return tuple(allowed_notice_type_ids)
+        return allowed_notice_type_ids
 
-    def judge_notice_receiver_types(self) -> tuple:
+    def judge_notice_receiver_types(self) -> list:
         all_receiver_types = self.get_all_receiver_type_names()
         allowed_receiver_type_ids = []
 
@@ -43,4 +43,4 @@ class ExampleGetAllowedViewTypes(BaseGetAllowedTypes):
             raise NotImplementedError(
                 'not judge all existed receiver types: to judge={}'.format(set(all_receiver_types) - set(self.done_receiver_type))
             )
-        return tuple(allowed_receiver_type_ids)
+        return allowed_receiver_type_ids
