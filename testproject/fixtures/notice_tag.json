@@ -7,7 +7,7 @@
             "updated_at": "2022-04-04 00:00:00+00",
             "is_deleted": false,
             "noticestore_id": 5,
-            "receiver_id": 1,
+            "receiver": "1",
             "read_at": "2022-04-04 01:00:00+00"
         }
     },
@@ -19,7 +19,7 @@
             "updated_at": "2022-04-04 00:00:00+00",
             "is_deleted": false,
             "noticestore_id": 15,
-            "receiver_id": 1,
+            "receiver": "1",
             "read_at": "2022-04-04 01:00:00+00"
         }
     }

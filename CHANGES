@@ -1,6 +1,11 @@
 Version History
 ===============
 
+Version 0.1.5
+--------------
+* receivertag.receiver is not limited to int
+* change judge base class
+
 Version 0.1.4
 --------------
 * client add view to judge whether has unread notice

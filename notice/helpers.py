@@ -11,23 +11,23 @@ from django.apps import apps
 
 class BaseGetAllowedTypes(metaclass=ABCMeta):
     """include receiver types and notice types"""
-    def __init__(self, receiver_id: int, judge_kwargs: dict = dict()) -> None:
-        if not isinstance(receiver_id, int):
-            raise TypeError('invalid type: receiver user id')
-        self.receiver_id = receiver_id
+    def __init__(self) -> None:
         self.done_receiver_type = list()
         self.done_notice_type = list()
-        if judge_kwargs:
-            for key, value in judge_kwargs.items():
-                setattr(self, key, value)
+        self._all_notice_type_names = None
+        self._all_receiver_type_names = None
 
-    @staticmethod
-    def get_all_notice_type_names():
-        return dict(apps.get_model('notice.NoticeType').objects.all().values_list('name', 'id'))
+    @property
+    def all_notice_type_names(self):
+        if not self._all_notice_type_names:
+            self._all_notice_type_names = dict(apps.get_model('notice.NoticeType').objects.all().values_list('name', 'id'))
+        return self._all_notice_type_names
 
-    @staticmethod
-    def get_all_receiver_type_names():
-        return dict(apps.get_model('notice.ReceiverType').objects.all().values_list('name', 'id'))
+    @property
+    def all_receiver_type_names(self):
+        if not self._all_receiver_type_names:
+            self._all_receiver_type_names = dict(apps.get_model('notice.ReceiverType').objects.all().values_list('name', 'id'))
+        return self._all_receiver_type_names
 
     @abstractmethod
     def judge_notice_receiver_types(self) -> list:
@@ -38,4 +38,12 @@ class BaseGetAllowedTypes(metaclass=ABCMeta):
         pass
 
     def judge(self):
+        if not (set(self.all_notice_type_names) - set(self.done_notice_type)):
+            raise NotImplementedError(
+                'not judge all existed notice types: to judge={}'.format(set(self.all_notice_type_names) - set(self.done_notice_type))
+            )
+        if not (set(self.all_receiver_type_names) - set(self.done_receiver_type)):
+            raise NotImplementedError(
+                'not judge all existed receiver types: to judge={}'.format(set(self.all_receiver_type_names) - set(self.done_receiver_type))
+            )
         return self.judge_notice_types(), self.judge_notice_receiver_types()

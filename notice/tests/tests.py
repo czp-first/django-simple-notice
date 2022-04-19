@@ -455,13 +455,13 @@ class ClientRetreiveNotice(TestCase):
         self.assertEqual(resp.status_code, 404)
 
     def test_unread(self):
-        self.assertFalse(ReceiverTag.objects.filter(noticestore_id=4, receiver_id=1).exists())
+        self.assertFalse(ReceiverTag.objects.filter(noticestore_id=4, receiver='1').exists())
         resp = self.client_request(4)
         self.assertEqual(resp.status_code, 200)
-        self.assertTrue(ReceiverTag.objects.filter(noticestore_id=4, receiver_id=1).exists())
+        self.assertTrue(ReceiverTag.objects.filter(noticestore_id=4, receiver='1').exists())
 
     def test_unread(self):
-        self.assertTrue(ReceiverTag.objects.filter(noticestore_id=5, receiver_id=1).exists())
+        self.assertTrue(ReceiverTag.objects.filter(noticestore_id=5, receiver='1').exists())
         resp = self.client_request(5)
         self.assertEqual(resp.status_code, 200)
-        self.assertTrue(ReceiverTag.objects.filter(noticestore_id=5, receiver_id=1).exists())
+        self.assertTrue(ReceiverTag.objects.filter(noticestore_id=5, receiver='1').exists())

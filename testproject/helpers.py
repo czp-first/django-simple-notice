@@ -9,38 +9,32 @@ from notice.helpers import BaseGetAllowedTypes
 
 class ExampleGetAllowedViewTypes(BaseGetAllowedTypes):
 
+    def __init__(self, receiver) -> None:
+        super().__init__()
+        self.receiver = receiver
+
     def judge_notice_types(self) -> list:
-        all_notice_types = self.get_all_notice_type_names()
         allowed_notice_type_ids = []
 
         self.done_notice_type.append('system')
-        if self.receiver_id:
-            allowed_notice_type_ids.append(all_notice_types['system'])
+        if self.receiver:
+            allowed_notice_type_ids.append(self.all_notice_type_names['system'])
 
         self.done_notice_type.append('private')
-        if self.receiver_id:
-            allowed_notice_type_ids.append(all_notice_types['private'])
+        if self.receiver:
+            allowed_notice_type_ids.append(self.all_notice_type_names['private'])
 
-        if set(all_notice_types) - set(self.done_notice_type) != set():
-            raise NotImplementedError(
-                'not judge all existed notice types: to judge={}'.format(set(all_notice_types) - set(self.done_notice_type))
-            )
         return allowed_notice_type_ids
 
     def judge_notice_receiver_types(self) -> list:
-        all_receiver_types = self.get_all_receiver_type_names()
         allowed_receiver_type_ids = []
 
         self.done_receiver_type.append('all')
-        if self.receiver_id:
-            allowed_receiver_type_ids.append(all_receiver_types['all'])
+        if self.receiver:
+            allowed_receiver_type_ids.append(self.all_receiver_type_names['all'])
 
         self.done_receiver_type.append('part')
         # if self.receiver_id:
         #     allowed_receiver_type_ids.append(all_receiver_types['part'])
 
-        if set(all_receiver_types) - set(self.done_receiver_type) != set():
-            raise NotImplementedError(
-                'not judge all existed receiver types: to judge={}'.format(set(all_receiver_types) - set(self.done_receiver_type))
-            )
         return allowed_receiver_type_ids

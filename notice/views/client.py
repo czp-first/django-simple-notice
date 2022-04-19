@@ -9,14 +9,15 @@ import math
 from django.http import HttpRequest, JsonResponse
 from django.utils import timezone
 from django.views.decorators.http import require_GET
+from psycopg2.errors import UniqueViolation
 
 from notice.settings import NOTICE_ALLOWED_TYPED_CLASS
 from notice.models import NoticeStore, ReceiverTag
 from notice.response import AuthFailed, NotFound, ValidationFailed, ValidationFailedDetailEnum
 
 
-def get_page_notice(receiver_id, page, size, title=None, judge_kwargs: dict =dict()):
-    allowed_notice_type_ids, allowed_receiver_type_ids = NOTICE_ALLOWED_TYPED_CLASS(receiver_id=receiver_id, judge_kwargs=judge_kwargs).judge()
+def get_page_notice(receiver, page, size, title=None, **kwargs):
+    allowed_notice_type_ids, allowed_receiver_type_ids = NOTICE_ALLOWED_TYPED_CLASS(receiver=receiver, **kwargs).judge()
     if not allowed_notice_type_ids or not allowed_receiver_type_ids:
         return JsonResponse(data={
             'total': 0,
@@ -41,14 +42,23 @@ def get_page_notice(receiver_id, page, size, title=None, judge_kwargs: dict =dic
             'id': item.id,
             'title': item.title,
             'publish_at': item.published_at,
-            'is_read': True if hasattr(item, 'receivertag') else False,
         }
         for item in NoticeStore.objects.filter(
             **filter_params
         ).only(
-            'title', 'publish_at', 'receivertag__id', 'is_draft'
+            'title', 'publish_at', 'is_draft'
         ).order_by('-id')[(page-1)*size: page*size]
     ] if page <= max_page else []
+
+    if items:
+        tags = ReceiverTag.objects.filter(
+            receiver=receiver, noticestore_id__in=[i['id'] for i in items]
+        ).values_list('noticestore_id', flat=True)
+        for item in items:
+            if item['id'] in tags:
+                item['is_read'] = True
+            else:
+                item['is_read'] = False
 
     return JsonResponse(data={
         'total': total,
@@ -76,11 +86,11 @@ def list_notice(request: HttpRequest):
 
     title = params.get('title', '')
 
-    return get_page_notice(request.user.pk, page, size, title)
+    return get_page_notice(str(request.user.pk), page, size, title)
 
 
-def retrieve_notice(receiver_id, pk, judge_kwargs: dict = dict()):
-    allowed_notice_type_ids, allowed_receiver_type_ids = NOTICE_ALLOWED_TYPED_CLASS(receiver_id, judge_kwargs).judge()
+def retrieve_notice(receiver, pk, **kwargs):
+    allowed_notice_type_ids, allowed_receiver_type_ids = NOTICE_ALLOWED_TYPED_CLASS(receiver, **kwargs).judge()
     if not allowed_notice_type_ids or not allowed_receiver_type_ids:
         return NotFound()
 
@@ -98,13 +108,16 @@ def retrieve_notice(receiver_id, pk, judge_kwargs: dict = dict()):
         return NotFound()
 
     if not ReceiverTag.objects.filter(
-        receiver_id=receiver_id, noticestore_id=pk
+        receiver=receiver, noticestore_id=pk
     ).exists():
-        ReceiverTag.objects.create(
-            receiver_id=receiver_id,
-            noticestore_id=pk,
-            read_at=timezone.now()
-        )
+        try:
+            ReceiverTag.objects.create(
+                receiver=receiver,
+                noticestore_id=pk,
+                read_at=timezone.now()
+            )
+        except UniqueViolation:
+            pass
 
     resp = {
         'id': notice.id,
@@ -120,11 +133,11 @@ def some_notice(request: HttpRequest, pk: int):
     if not request.user.is_authenticated:
         return AuthFailed()
 
-    return retrieve_notice(request.user.pk, pk)
+    return retrieve_notice(str(request.user.pk), pk)
 
 
-def get_unread_status(receiver_id, judge_kwargs: dict =dict()):
-    allowed_notice_type_ids, allowed_receiver_type_ids = NOTICE_ALLOWED_TYPED_CLASS(receiver_id=receiver_id, judge_kwargs=judge_kwargs).judge()
+def get_unread_status(receiver, **kwargs):
+    allowed_notice_type_ids, allowed_receiver_type_ids = NOTICE_ALLOWED_TYPED_CLASS(receiver=receiver, **kwargs).judge()
     filter_params = {
         'is_draft': False,
         'publish_at__lte': timezone.now(),
@@ -132,7 +145,7 @@ def get_unread_status(receiver_id, judge_kwargs: dict =dict()):
         'notice_type_id__in': allowed_notice_type_ids,
     }
     total = NoticeStore.objects.filter(**filter_params).count()
-    read_total = ReceiverTag.objects.filter(receiver_id=receiver_id).count()
+    read_total = ReceiverTag.objects.filter(receiver=receiver).count()
     return JsonResponse(data={'is_unread': False if total == read_total else True})
 
 
@@ -140,4 +153,4 @@ def get_unread_status(receiver_id, judge_kwargs: dict =dict()):
 def notice_status(request: HttpRequest):
     if not request.user.is_authenticated:
         return AuthFailed()
-    return get_unread_status(request.user.pk)
+    return get_unread_status(str(request.user.pk))
