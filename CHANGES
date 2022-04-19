@@ -5,6 +5,7 @@ Version 0.1.5
 --------------
 * receivertag.receiver is not limited to int
 * change judge base class
+* cancel receivertag onetoonefield noticestore
 
 Version 0.1.4
 --------------

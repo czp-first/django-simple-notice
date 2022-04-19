@@ -89,7 +89,7 @@ class NoticeStore(BaseTimeModel, IsDeletedModel):
 
 
 class ReceiverTag(BaseTimeModel, IsDeletedModel):
-    noticestore = models.OneToOneField(NoticeStore, on_delete=models.CASCADE, verbose_name=_('notice'))
+    noticestore = models.ForeignKey(NoticeStore, on_delete=models.CASCADE, verbose_name=_('notice'))
     receiver = models.CharField(verbose_name=_('receiver'), max_length=64)
     read_at = models.DateTimeField(verbose_name=_('read time'))
 
