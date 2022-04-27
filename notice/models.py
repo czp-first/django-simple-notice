@@ -104,7 +104,9 @@ class ReceiverTag(BaseTimeModel, IsDeletedModel):
 
 
 class Backlog(BaseTimeModel):
+    creator = models.CharField(verbose_name=_('creator'), max_length=64, null=True)
     receiver = models.CharField(verbose_name=_('receiver'), max_length=64)
+    title = models.CharField(null=True, max_length=64, verbose_name=_('title'))
     data = JSONField(verbose_name=_('data'), null=True)
     redirect_url = models.CharField(max_length=1024, null=True, verbose_name=_('redirect url'))
     is_done = models.BooleanField(default=False, verbose_name=_('completed status'))
@@ -115,7 +117,7 @@ class Backlog(BaseTimeModel):
 
 
 class PrivateNotice(BaseTimeModel):
-    creator = models.CharField(verbose_name=_('creator'), max_length=64)
+    creator = models.CharField(verbose_name=_('creator'), max_length=64, null=True)
     receiver = models.CharField(verbose_name=_('receiver'), max_length=64)
     title = models.CharField(null=True, max_length=64, verbose_name=_('title'))
     content = models.TextField(null=True, verbose_name=_('content'))

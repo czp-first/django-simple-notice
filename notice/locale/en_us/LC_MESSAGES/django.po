@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-27 11:36+0800\n"
+"POT-Creation-Date: 2022-04-27 14:10+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,166 +17,162 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: notice/forms.py:29
+#: forms.py:29
 msgid "No"
 msgstr "dont send"
 
-#: notice/forms.py:30
+#: forms.py:30
 msgid "Now"
 msgstr "send right now"
 
-#: notice/forms.py:31
+#: forms.py:31
 msgid "Timing"
 msgstr "timing send"
 
-#: notice/models.py:18
+#: models.py:24
 msgid "create time"
 msgstr "create time"
 
-#: notice/models.py:31
-msgid "delete tag"
-msgstr "delete tag"
-
-#: notice/models.py:40
-msgid "name"
-msgstr "name"
-
-#: notice/models.py:41
-msgid "description"
-msgstr "description"
-
-#: notice/models.py:57 notice/models.py:114
-msgid "title"
-msgstr "title"
-
-#: notice/models.py:58 notice/models.py:115
-msgid "content"
-msgstr "content"
-
-#: notice/models.py:59
-msgid "notice type"
-msgstr "notice type"
-
-#: notice/models.py:60
-msgid "receiver type"
-msgstr "receiver type"
-
-#: notice/models.py:61
-msgid "draft tag"
-msgstr "draft tag"
-
-#: notice/models.py:62
-msgid "creator id"
-msgstr "creator id"
-
-#: notice/models.py:63
-msgid "publish time"
-msgstr "publish time"
-
-#: notice/models.py:71
-msgid "Draft"
-msgstr "draft"
-
-#: notice/models.py:72
-msgid "Queue"
-msgstr "ready to send"
-
-#: notice/models.py:73
-msgid "Done"
-msgstr "has been sent"
-
-#: notice/models.py:92
-msgid "notice"
-msgstr "notice"
-
-#: notice/models.py:93 notice/models.py:101 notice/models.py:113
-msgid "receiver"
-msgstr "receiver"
-
-#: notice/models.py:94 notice/models.py:118
-msgid "read time"
-msgstr "read time"
-
-#: notice/models.py:102
-msgid "data"
-msgstr "data"
-
-#: notice/models.py:103 notice/models.py:116
-msgid "redirect url"
-msgstr "redirect url"
-
-#: notice/models.py:104
-msgid "completed status"
-msgstr "completed status"
-
-#: notice/models.py:19
+#: models.py:25
 msgid "latest update time"
 msgstr "the latest update time"
 
-#: notice/models.py:105
-msgid "completed datetime"
-msgstr "completed datetime"
+#: models.py:37
+msgid "delete tag"
+msgstr "delete tag"
 
-#: notice/models.py:62
+#: models.py:46
+msgid "name"
+msgstr "name"
+
+#: models.py:47
+msgid "description"
+msgstr "description"
+
+#: models.py:63 models.py:109 models.py:122
+msgid "title"
+msgstr "title"
+
+#: models.py:64 models.py:123
+msgid "content"
+msgstr "content"
+
+#: models.py:65
+msgid "notice type"
+msgstr "notice type"
+
+#: models.py:66
+msgid "receiver type"
+msgstr "receiver type"
+
+#: models.py:67
+msgid "draft tag"
+msgstr "draft tag"
+
+#: models.py:68
 msgid "creator id"
 msgstr "creator id"
 
-#: notice/models.py:112
+#: models.py:69
+msgid "publish time"
+msgstr "publish time"
+
+#: models.py:77
+msgid "Draft"
+msgstr "draft"
+
+#: models.py:78
+msgid "Queue"
+msgstr "ready to send"
+
+#: models.py:79
+msgid "Done"
+msgstr "has been sent"
+
+#: models.py:98
+msgid "notice"
+msgstr "notice"
+
+#: models.py:99 models.py:108 models.py:121
+msgid "receiver"
+msgstr "receiver"
+
+#: models.py:100 models.py:126
+msgid "read time"
+msgstr "read time"
+
+#: models.py:107 models.py:120
 msgid "creator"
 msgstr "creator"
 
-#: notice/models.py:117
+#: models.py:110
+msgid "data"
+msgstr "data"
+
+#: models.py:111 models.py:124
+msgid "redirect url"
+msgstr "redirect url"
+
+#: models.py:112
+msgid "completed status"
+msgstr "completed status"
+
+#: models.py:113
+msgid "completed datetime"
+msgstr "completed datetime"
+
+#: models.py:125
 msgid "read status"
 msgstr "read status"
 
-#: notice/response.py:53
+#: response.py:53
 msgid "Invalid Notice Type"
 msgstr "invalid notice type"
 
-#: notice/response.py:54
+#: response.py:54
 msgid "Invalid Receiver Type"
 msgstr "invalid receiver type"
 
-#: notice/response.py:55
+#: response.py:55
 msgid "Invalid Send Way"
 msgstr "invalid send way"
 
-#: notice/response.py:56
+#: response.py:56
 msgid "Invalid Publish Time"
 msgstr "invalid publish time"
 
-#: notice/response.py:57
+#: response.py:57
 msgid "Invalid Page"
 msgstr "invalid page"
 
-#: notice/response.py:58
+#: response.py:58
 msgid "Invalid Size"
 msgstr "invalid size"
 
-#: notice/response.py:60
+#: response.py:60
 msgid "Cant Set Time Which Is Out Of Date"
 msgstr "cant set time which is out of date"
 
-#: notice/response.py:61
+#: response.py:61
 msgid "Cant Change Notice Which Is Not Draft"
 msgstr "cant change notice which is not draft"
 
-#: notice/response.py:62
+#: response.py:62
 msgid "Cant Change Timing Which Is Draft"
 msgstr "cant change timing which is draft"
 
-#: notice/response.py:63
+#: response.py:63
 msgid "Cant Delete Timing Which Is Draft"
 msgstr "cant delete timing which is draft"
 
-#: notice/response.py:64
+#: response.py:64
 msgid "Cant Delete Notice Which Is Not Draft"
 msgstr "cant delete notice which is not draft"
 
-#: notice/response.py:65
+#: response.py:65
 msgid "Cant Change Notice Which Has Been published"
 msgstr "cant change notice which has been published"
 
-#: notice/response.py:66
+#: response.py:66
 msgid "Cant Delete Notice Which Has Been published"
 msgstr "cant delete notice which has been published"
