@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-06 10:28+0800\n"
+"POT-Creation-Date: 2022-04-27 11:36+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,138 +17,166 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: forms.py:28
+#: notice/forms.py:29
 msgid "No"
 msgstr "dont send"
 
-#: forms.py:29
+#: notice/forms.py:30
 msgid "Now"
 msgstr "send right now"
 
-#: forms.py:30
+#: notice/forms.py:31
 msgid "Timing"
 msgstr "timing send"
 
-#: models.py:17
+#: notice/models.py:18
 msgid "create time"
 msgstr "create time"
 
-#: models.py:18
-msgid "latest update time"
-msgstr "the latest update time"
-
-#: models.py:30
+#: notice/models.py:31
 msgid "delete tag"
 msgstr "delete tag"
 
-#: models.py:39
+#: notice/models.py:40
 msgid "name"
 msgstr "name"
 
-#: models.py:40
+#: notice/models.py:41
 msgid "description"
 msgstr "description"
 
-#: models.py:56
+#: notice/models.py:57 notice/models.py:114
 msgid "title"
 msgstr "title"
 
-#: models.py:57
+#: notice/models.py:58 notice/models.py:115
 msgid "content"
 msgstr "content"
 
-#: models.py:58
+#: notice/models.py:59
 msgid "notice type"
 msgstr "notice type"
 
-#: models.py:59
+#: notice/models.py:60
 msgid "receiver type"
 msgstr "receiver type"
 
-#: models.py:60
+#: notice/models.py:61
 msgid "draft tag"
 msgstr "draft tag"
 
-#: models.py:61
+#: notice/models.py:62
 msgid "creator id"
 msgstr "creator id"
 
-#: models.py:62
+#: notice/models.py:63
 msgid "publish time"
 msgstr "publish time"
 
-#: models.py:70
+#: notice/models.py:71
 msgid "Draft"
 msgstr "draft"
 
-#: models.py:71
+#: notice/models.py:72
 msgid "Queue"
 msgstr "ready to send"
 
-#: models.py:72
+#: notice/models.py:73
 msgid "Done"
 msgstr "has been sent"
 
-#: models.py:91
+#: notice/models.py:92
 msgid "notice"
 msgstr "notice"
 
-#: models.py:92
+#: notice/models.py:93 notice/models.py:101 notice/models.py:113
 msgid "receiver"
 msgstr "receiver"
 
-#: models.py:93
+#: notice/models.py:94 notice/models.py:118
 msgid "read time"
 msgstr "read time"
 
-#: response.py:53
+#: notice/models.py:102
+msgid "data"
+msgstr "data"
+
+#: notice/models.py:103 notice/models.py:116
+msgid "redirect url"
+msgstr "redirect url"
+
+#: notice/models.py:104
+msgid "completed status"
+msgstr "completed status"
+
+#: notice/models.py:19
+msgid "latest update time"
+msgstr "the latest update time"
+
+#: notice/models.py:105
+msgid "completed datetime"
+msgstr "completed datetime"
+
+#: notice/models.py:62
+msgid "creator id"
+msgstr "creator id"
+
+#: notice/models.py:112
+msgid "creator"
+msgstr "creator"
+
+#: notice/models.py:117
+msgid "read status"
+msgstr "read status"
+
+#: notice/response.py:53
 msgid "Invalid Notice Type"
 msgstr "invalid notice type"
 
-#: response.py:54
+#: notice/response.py:54
 msgid "Invalid Receiver Type"
 msgstr "invalid receiver type"
 
-#: response.py:55
+#: notice/response.py:55
 msgid "Invalid Send Way"
 msgstr "invalid send way"
 
-#: response.py:56
+#: notice/response.py:56
 msgid "Invalid Publish Time"
 msgstr "invalid publish time"
 
-#: response.py:57
+#: notice/response.py:57
 msgid "Invalid Page"
 msgstr "invalid page"
 
-#: response.py:58
+#: notice/response.py:58
 msgid "Invalid Size"
 msgstr "invalid size"
 
-#: response.py:60
+#: notice/response.py:60
 msgid "Cant Set Time Which Is Out Of Date"
 msgstr "cant set time which is out of date"
 
-#: response.py:61
+#: notice/response.py:61
 msgid "Cant Change Notice Which Is Not Draft"
 msgstr "cant change notice which is not draft"
 
-#: response.py:62
+#: notice/response.py:62
 msgid "Cant Change Timing Which Is Draft"
 msgstr "cant change timing which is draft"
 
-#: response.py:63
+#: notice/response.py:63
 msgid "Cant Delete Timing Which Is Draft"
 msgstr "cant delete timing which is draft"
 
-#: response.py:64
+#: notice/response.py:64
 msgid "Cant Delete Notice Which Is Not Draft"
 msgstr "cant delete notice which is not draft"
 
-#: response.py:65
+#: notice/response.py:65
 msgid "Cant Change Notice Which Has Been published"
 msgstr "cant change notice which has been published"
 
-#: response.py:66
+#: notice/response.py:66
 msgid "Cant Delete Notice Which Has Been published"
 msgstr "cant delete notice which has been published"

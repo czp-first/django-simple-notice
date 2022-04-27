@@ -6,8 +6,14 @@
 """
 from enum import Enum
 
+import django
+if django.VERSION > (4, 0):
+    from django.db.models import JSONField
+else:
+    from django.contrib.postgres.fields import JSONField
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models import JSONField
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -95,3 +101,27 @@ class ReceiverTag(BaseTimeModel, IsDeletedModel):
 
     class Meta:
         db_table = 'notice_receiver_tag'
+
+
+class Backlog(BaseTimeModel):
+    receiver = models.CharField(verbose_name=_('receiver'), max_length=64)
+    data = JSONField(verbose_name=_('data'), null=True)
+    redirect_url = models.CharField(max_length=1024, null=True, verbose_name=_('redirect url'))
+    is_done = models.BooleanField(default=False, verbose_name=_('completed status'))
+    done_at = models.DateTimeField(null=True, verbose_name=_('completed datetime'))
+
+    class Meta:
+        db_table = 'notice_backlog'
+
+
+class PrivateNotice(BaseTimeModel):
+    creator = models.CharField(verbose_name=_('creator'), max_length=64)
+    receiver = models.CharField(verbose_name=_('receiver'), max_length=64)
+    title = models.CharField(null=True, max_length=64, verbose_name=_('title'))
+    content = models.TextField(null=True, verbose_name=_('content'))
+    redirect_url = models.CharField(max_length=1024, null=True, verbose_name=_('redirect url'))
+    is_read = models.BooleanField(default=False, verbose_name=_('read status'))
+    read_at = models.DateTimeField(null=True, verbose_name=_('read time'))
+
+    class Meta:
+        db_table = 'notice_private_notice'

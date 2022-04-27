@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-06 10:28+0800\n"
+"POT-Creation-Date: 2022-04-27 11:41+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,138 +18,162 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: forms.py:28
+#: notice/forms.py:29
 msgid "No"
 msgstr "不发送"
 
-#: forms.py:29
+#: notice/forms.py:30
 msgid "Now"
 msgstr "立即发送"
 
-#: forms.py:30
+#: notice/forms.py:31
 msgid "Timing"
 msgstr "定时发送"
 
-#: models.py:17
+#: notice/models.py:18
 msgid "create time"
 msgstr "创建时间"
 
-#: models.py:18
+#: notice/models.py:19
 msgid "latest update time"
 msgstr "最近更新时间"
 
-#: models.py:30
+#: notice/models.py:31
 msgid "delete tag"
 msgstr "删除标记"
 
-#: models.py:39
+#: notice/models.py:40
 msgid "name"
 msgstr "名字"
 
-#: models.py:40
+#: notice/models.py:41
 msgid "description"
 msgstr "描述"
 
-#: models.py:56
+#: notice/models.py:57 notice/models.py:114
 msgid "title"
 msgstr "标题"
 
-#: models.py:57
+#: notice/models.py:58 notice/models.py:115
 msgid "content"
 msgstr "内容"
 
-#: models.py:58
+#: notice/models.py:59
 msgid "notice type"
 msgstr "消息类型"
 
-#: models.py:59
+#: notice/models.py:60
 msgid "receiver type"
 msgstr "接收人类型"
 
-#: models.py:60
+#: notice/models.py:61
 msgid "draft tag"
 msgstr "草稿标记"
 
-#: models.py:61
+#: notice/models.py:62
 msgid "creator id"
 msgstr "创建人id"
 
-#: models.py:62
+#: notice/models.py:63
 msgid "publish time"
 msgstr "发布时间"
 
-#: models.py:70
+#: notice/models.py:71
 msgid "Draft"
 msgstr "草稿"
 
-#: models.py:71
+#: notice/models.py:72
 msgid "Queue"
 msgstr "待发送"
 
-#: models.py:72
+#: notice/models.py:73
 msgid "Done"
 msgstr "已发送"
 
-#: models.py:91
+#: notice/models.py:92
 msgid "notice"
 msgstr "消息"
 
-#: models.py:92
+#: notice/models.py:93 notice/models.py:101 notice/models.py:113
 msgid "receiver"
 msgstr "接收人"
 
-#: models.py:93
+#: notice/models.py:94 notice/models.py:118
 msgid "read time"
 msgstr "阅读时间"
 
-#: response.py:53
+#: notice/models.py:102
+msgid "data"
+msgstr "数据"
+
+#: notice/models.py:103 notice/models.py:116
+msgid "redirect url"
+msgstr "跳转url"
+
+#: notice/models.py:104
+msgid "completed status"
+msgstr "完成状态"
+
+#: notice/models.py:105
+msgid "completed datetime"
+msgstr "最近更新时间"
+
+#: notice/models.py:112
+msgid "creator"
+msgstr "创建人"
+
+#: notice/models.py:117
+msgid "read status"
+msgstr "阅读状态"
+
+#: notice/response.py:53
 msgid "Invalid Notice Type"
 msgstr "无效消息类型"
 
-#: response.py:54
+#: notice/response.py:54
 msgid "Invalid Receiver Type"
 msgstr "无效接收人类型"
 
-#: response.py:55
+#: notice/response.py:55
 msgid "Invalid Send Way"
 msgstr "无效发送方式"
 
-#: response.py:56
+#: notice/response.py:56
 msgid "Invalid Publish Time"
 msgstr "无效发布时间"
 
-#: response.py:57
+#: notice/response.py:57
 msgid "Invalid Page"
 msgstr "无效页码"
 
-#: response.py:58
+#: notice/response.py:58
 msgid "Invalid Size"
 msgstr "无效页码大小"
 
-#: response.py:60
+#: notice/response.py:60
 msgid "Cant Set Time Which Is Out Of Date"
 msgstr "不能使用过去时间"
 
-#: response.py:61
+#: notice/response.py:61
 msgid "Cant Change Notice Which Is Not Draft"
 msgstr "非草稿不能修改"
 
-#: response.py:62
+#: notice/response.py:62
 msgid "Cant Change Timing Which Is Draft"
 msgstr "草稿不能修改定时发送时间"
 
-#: response.py:63
+#: notice/response.py:63
 msgid "Cant Delete Timing Which Is Draft"
 msgstr "草稿不能删除定时发送时间"
 
-#: response.py:64
+#: notice/response.py:64
 msgid "Cant Delete Notice Which Is Not Draft"
 msgstr "非草稿不能删除"
 
-#: response.py:65
+#: notice/response.py:65
 msgid "Cant Change Notice Which Has Been published"
 msgstr "不能修改已发送的消息"
 
-#: response.py:66
+#: notice/response.py:66
 msgid "Cant Delete Notice Which Has Been published"
 msgstr "不能删除已发送的消息"
