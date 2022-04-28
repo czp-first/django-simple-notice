@@ -9,6 +9,7 @@ import math
 from django.utils import timezone
 from django.http import JsonResponse, HttpRequest
 from django.db.models import Q
+from django.http.request import QueryDict
 from django.views.decorators.http import require_http_methods
 
 from notice.forms import PrivateForm
@@ -28,15 +29,15 @@ def unread_private(receiver):
 
 
 # create private notice:
-def create_private(data: dict, creator_id: int):
+def create_private(data: dict, creator: str):
     f = PrivateForm(data)
     if not f.is_valid():
         return ValidationFailed(f.errors)
 
     data = f.cleaned_data
-    data["creator"] = creator_id
-    back_log = PrivateNotice.objects.create(**data)
-    return JsonResponse(data={'id': back_log.pk})
+    data["creator"] = creator
+    private_obj = PrivateNotice.objects.create(**data)
+    return JsonResponse(data={'id': private_obj.pk})
 
 
 @require_http_methods(["GET", "POST"])
@@ -53,13 +54,12 @@ def private(request: HttpRequest):
 
 
 # list private notice
-def list_private(params: dict):
-    keyword = params.get("keyword", "")
-    private_info = PrivateNotice.objects.filter().values().order_by("-id")
+def list_private(params: QueryDict, receiver: str):
+    keyword = params.get("keyword")
+    private_info = PrivateNotice.objects.filter(receiver=receiver).values().order_by("-id")
     if keyword:
         private_info = PrivateNotice.objects.filter(
             Q(title__contains=keyword) |
-            Q(receiver__contains=keyword) |
             Q(creator__contains=keyword)
         ).values().order_by("-id")
 
@@ -73,7 +73,7 @@ def list_private(params: dict):
         return ValidationFailed(ValidationFailedDetailEnum.SIZE.value)
     size = int(size)
 
-    total = PrivateNotice.objects.all().count()
+    total = private_info.count()
     max_page = math.ceil(total / size)
     resp = {
         'total': total,
@@ -89,7 +89,7 @@ def privates(request: HttpRequest):
     if not request.user.is_authenticated:
         return AuthFailed()
     param = request.GET
-    return list_private(param)
+    return list_private(param, request.user.pk)
 
 
 # get a private notice detail
