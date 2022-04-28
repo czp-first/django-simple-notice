@@ -25,12 +25,6 @@ client_urlpatterns = [
     path('client/status/', client_views.notice_status, name='client-notice-status'),
 ]
 
-backlog_urlpatterns = [
-    path('backlog/', backlog.backlog, name="backlog-notice-status"),
-    path('backlogs/', backlog.backlogs, name="backlog-notices"),
-    path('finish_backlog/<int:pk>/', backlog.f_backlog, name="finish-backlog"),
-]
-
 private_urlpatterns = [
     path('private/', private_notice.private, name="backlog-private"),
     path('privates/', private_notice.privates, name="backlog-privates"),
@@ -38,4 +32,4 @@ private_urlpatterns = [
     path('finish_private/<int:pk>/', private_notice.f_private, name="finish-private"),
 ]
 
-urlpatterns = admin_urlpatterns + client_urlpatterns + backlog_urlpatterns + private_urlpatterns
+urlpatterns = admin_urlpatterns + client_urlpatterns + private_urlpatterns
