@@ -17,8 +17,6 @@ from notice.response import AuthFailed, ValidationFailed, ValidationFailedDetail
 
 # check if undo backlog exist: resp={'undo': false}
 def undo_backlog(receiver):
-    if not receiver:
-        return ValidationFailed()
     filter_params = {
         'is_done': False,
         "receiver": receiver
@@ -29,12 +27,13 @@ def undo_backlog(receiver):
 
 
 # create a backlog:
-def create_backlog(data: dict, creator_id: int):
+def create_backlog(data: dict, creator_id: str):
     f = BlockForm(data)
     if not f.is_valid():
         return ValidationFailed(f.errors)
 
     data = f.cleaned_data
+    data["creator"] = creator_id
     back_log = Backlog.objects.create(**data)
     return JsonResponse(data={'id': back_log.pk})
 
@@ -46,15 +45,15 @@ def backlog(request: HttpRequest):
 
     if request.method == 'POST':
         data = request.POST.dict()
-        return create_backlog(data, 1)
+        return create_backlog(data, request.user.pk)
 
-    receiver = request.GET.get("receiver", None)
+    receiver = request.GET.get("receiver")
     return undo_backlog(receiver)
 
 
 # list backlog
 def list_backlog(params: dict):
-    backlog_info = Backlog.objects.all().values().order_by("id")
+    backlog_info = Backlog.objects.filter().values().order_by("-id")
     page = params.get('page', '1')
     if not page.isdigit():
         return ValidationFailed(ValidationFailedDetailEnum.PAGE.value)
@@ -81,20 +80,19 @@ def backlogs(request: HttpRequest):
     if not request.user.is_authenticated:
         return AuthFailed()
     param = request.GET
+
     return list_backlog(param)
 
 
 # finish backlog
-def finish_backlog(pk: str):
-    Backlog.objects.filter(id=pk, redirect_url__isnull=False).update(is_done=True, done_at=timezone.now())
+def finish_backlog(pk: int):
+    Backlog.objects.filter(id=pk).update(is_done=True, done_at=timezone.now())
 
     return JsonResponse(data={})
 
 
-@require_http_methods(["PATCH"])
+@require_http_methods(["PUT"])
 def f_backlog(request: HttpRequest, pk: int):
     if not request.user.is_authenticated:
         return AuthFailed()
-    if not Backlog.objects.filter(id=pk).exists():
-        return ValidationFailed(ValidationFailedDetailEnum.INVALID_ID.value)
     return finish_backlog(pk)
