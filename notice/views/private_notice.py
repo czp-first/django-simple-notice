@@ -8,6 +8,7 @@ import math
 
 from django.utils import timezone
 from django.http import JsonResponse, HttpRequest
+from django.db.models import Q
 from django.views.decorators.http import require_http_methods
 
 from notice.forms import PrivateForm
@@ -53,7 +54,15 @@ def private(request: HttpRequest):
 
 # list private notice
 def list_private(params: dict):
-    private_info = PrivateNotice.objects.all().values().order_by("-id")
+    keyword = params.get("keyword", "")
+    private_info = PrivateNotice.objects.filter().values().order_by("-id")
+    if keyword:
+        private_info = PrivateNotice.objects.filter(
+            Q(title__contains=keyword) |
+            Q(receiver__contains=keyword) |
+            Q(creator__contains=keyword)
+        ).values().order_by("-id")
+
     page = params.get('page', '1')
     if not page.isdigit():
         return ValidationFailed(ValidationFailedDetailEnum.PAGE.value)
