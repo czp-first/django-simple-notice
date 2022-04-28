@@ -28,8 +28,14 @@ client_urlpatterns = [
 backlog_urlpatterns = [
     path('backlog/', backlog.backlog, name="backlog-notice-status"),
     path('backlogs/', backlog.backlogs, name="backlog-notices"),
-    path('finish_backlog/<int:pk>/', backlog.f_backlog, name="finish_backlog"),
+    path('finish_backlog/<int:pk>/', backlog.f_backlog, name="finish-backlog"),
 ]
 
+private_urlpatterns = [
+    path('private/', private_notice.private, name="backlog-private"),
+    path('privates/', private_notice.privates, name="backlog-privates"),
+    path('private/<int:pk>/', private_notice.private_notice_detail, name="private-notice-detail"),
+    path('finish_private/<int:pk>/', private_notice.f_private, name="finish-private"),
+]
 
-urlpatterns = admin_urlpatterns + client_urlpatterns + backlog_urlpatterns
+urlpatterns = admin_urlpatterns + client_urlpatterns + backlog_urlpatterns + private_urlpatterns
