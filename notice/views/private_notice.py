@@ -55,14 +55,10 @@ def private(request: HttpRequest):
 
 # list private notice
 def list_private(params: QueryDict, receiver: str):
-    keyword = params.get("keyword")
-    private_info = PrivateNotice.objects.filter(receiver=receiver).values().order_by("-id")
-    if keyword:
-        private_info = PrivateNotice.objects.filter(
-            Q(title__contains=keyword) |
-            Q(creator__contains=keyword)
-        ).values().order_by("-id")
-
+    keyword = params.get("keyword", "")
+    queryset = PrivateNotice.objects.filter(
+        Q(title__contains=keyword) | Q(creator__contains=keyword), receiver=receiver
+    )
     page = params.get('page', '1')
     if not page.isdigit():
         return ValidationFailed(ValidationFailedDetailEnum.PAGE.value)
@@ -73,23 +69,26 @@ def list_private(params: QueryDict, receiver: str):
         return ValidationFailed(ValidationFailedDetailEnum.SIZE.value)
     size = int(size)
 
-    total = private_info.count()
+    total = queryset.count()
     max_page = math.ceil(total / size)
+
+    item = list(queryset.order_by("-id").values())[(page - 1) * size: page * size] if page <= max_page else []
     resp = {
         'total': total,
         'max_page': max_page,
         'page': page,
-        'items': list(private_info)[(page - 1) * size: page * size]
+        'items': item
     }
     return JsonResponse(data=resp)
 
 
 @require_http_methods(["GET"])
 def privates(request: HttpRequest):
-    if not request.user.is_authenticated:
-        return AuthFailed()
+    # if not request.user.is_authenticated:
+    #     return AuthFailed()
     param = request.GET
-    return list_private(param, request.user.pk)
+    # return list_private(param, request.user.pk)
+    return list_private(param, 1)
 
 
 # get a private notice detail
