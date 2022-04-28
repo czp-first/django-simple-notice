@@ -100,8 +100,8 @@ class ChangeTimingForm(forms.Form):
 class BlockForm(forms.Form):
     """待办消息表单数据"""
     creator = forms.CharField(required=False, max_length=64)
-    receiver = forms.CharField(required=False, max_length=64)
-    title = forms.CharField(required=False, max_length=64)
+    receiver = forms.CharField(required=True, max_length=64)
+    title = forms.CharField(required=True, max_length=64)
     data = forms.JSONField(required=False)
     redirect_url = forms.URLField(required=False, max_length=1024)
 
@@ -109,6 +109,6 @@ class BlockForm(forms.Form):
 class PrivateForm(forms.Form):
     """私信消息表单"""
     creator = forms.CharField(required=False, max_length=64)
-    receiver = forms.CharField(required=False, max_length=64)
-    title = forms.CharField(required=False, max_length=64)
+    receiver = forms.CharField(required=True, max_length=64)
+    title = forms.CharField(required=True, max_length=64)
     redirect_url = forms.URLField(required=False, max_length=1024)

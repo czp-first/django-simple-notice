@@ -8,11 +8,12 @@ import math
 
 from django.utils import timezone
 from django.http import JsonResponse, HttpRequest
+from django.db.models import Q
 from django.views.decorators.http import require_http_methods
 
 from notice.forms import BlockForm
 from notice.models import Backlog
-from notice.response import AuthFailed, ValidationFailed, ValidationFailedDetailEnum
+from notice.response import AuthFailed, NotFound, ValidationFailed, ValidationFailedDetailEnum
 
 
 # check if undo backlog exist: resp={'undo': false}
@@ -27,15 +28,15 @@ def undo_backlog(receiver):
 
 
 # create a backlog:
-def create_backlog(data: dict, creator_id: str):
+def create_backlog(data: dict, creator: str):
     f = BlockForm(data)
     if not f.is_valid():
         return ValidationFailed(f.errors)
 
     data = f.cleaned_data
-    data["creator"] = creator_id
-    back_log = Backlog.objects.create(**data)
-    return JsonResponse(data={'id': back_log.pk})
+    data["creator"] = creator
+    backlog_obj = Backlog.objects.create(**data)
+    return JsonResponse(data={'id': backlog_obj.pk})
 
 
 @require_http_methods(["GET", "POST"])
@@ -53,7 +54,15 @@ def backlog(request: HttpRequest):
 
 # list backlog
 def list_backlog(params: dict):
+    keyword = params.get("keyword", "")
     backlog_info = Backlog.objects.filter().values().order_by("-id")
+    if keyword:
+        backlog_info = Backlog.objects.filter(
+            Q(title__contains=keyword) |
+            Q(receiver__contains=keyword) |
+            Q(creator__contains=keyword)
+        ).values().order_by("-id")
+
     page = params.get('page', '1')
     if not page.isdigit():
         return ValidationFailed(ValidationFailedDetailEnum.PAGE.value)
@@ -95,4 +104,6 @@ def finish_backlog(pk: int):
 def f_backlog(request: HttpRequest, pk: int):
     if not request.user.is_authenticated:
         return AuthFailed()
+    if not Backlog.objects.filter(id=pk).exists():
+        return NotFound()
     return finish_backlog(pk)
