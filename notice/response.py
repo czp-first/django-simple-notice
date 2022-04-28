@@ -64,3 +64,8 @@ class ValidationFailedDetailEnum(Enum):
     DELETE_NOT_DRAFT = _('Cant Delete Notice Which Is Not Draft')
     CHANGE_PUBLISHED = _('Cant Change Notice Which Has Been published')
     DELETE_PUBLISHED = _('Cant Delete Notice Which Has Been published')
+
+    INVALID_USER = _("Invalid user ID")
+    INVALID_URL = _("Invalid URL")
+    INVALID_ID = _("Invalid ID")
+

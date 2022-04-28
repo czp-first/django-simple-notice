@@ -4,6 +4,7 @@
 @Author  : Rey
 @Time    : 2022-04-01 17:03:32
 """
+import re
 from enum import Enum
 
 from django import forms
@@ -19,7 +20,6 @@ from notice.settings import NOTICE_DATETIME_FORMAT
 
 
 class NoticeForm(forms.Form):
-
     class SendWayEnum(Enum):
         NO = 'no'
         NOW = 'now'
@@ -95,3 +95,42 @@ class ChangeTimingForm(forms.Form):
             if publish_at <= timezone_now():
                 raise ValidationError(ValidationFailedDetailEnum.OUTDATE.value)
         return publish_at
+
+
+def clean_redirect_url():
+    redirect_url = ""
+    return redirect_url
+
+
+class BlockForm(forms.Form):
+    """待办消息表单数据"""
+    creator = forms.CharField(required=False, max_length=64)
+    receiver = forms.CharField(required=False, max_length=64)
+    title = forms.CharField(required=False, max_length=64)
+    data = forms.JSONField(required=False)
+    redirect_url = forms.CharField(required=False, max_length=1024)
+
+    def clean_creator(self):
+        creator: str = self.cleaned_data.get("creator")
+        if creator:
+            if not creator.isdigit():
+                raise ValidationError(ValidationFailedDetailEnum.INVALID_USER.value)
+
+            return creator
+
+    def clean_receiver(self):
+        receiver: str = self.cleaned_data.get("receiver")
+        if not receiver.isdigit():
+            raise ValidationError(ValidationFailedDetailEnum.INVALID_USER.value)
+
+        return receiver
+
+    def clean_redirect_url(self):
+        redirect_url: str = self.cleaned_data.get("redirect_url")
+        if not re.match(r"^(https?|ftp|file)://.+$", redirect_url):
+            raise ValidationError(ValidationFailedDetailEnum.INVALID_URL.value)
+
+
+class PrivateForm(forms.Form):
+    """私信消息表单"""
+    pass
