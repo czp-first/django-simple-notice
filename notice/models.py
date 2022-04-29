@@ -120,8 +120,11 @@ class PrivateNotice(BaseTimeModel):
     creator = models.CharField(verbose_name=_('creator'), max_length=64, null=True)
     receiver = models.CharField(verbose_name=_('receiver'), max_length=64)
     title = models.CharField(null=True, max_length=64, verbose_name=_('title'))
-    content = models.TextField(null=True, verbose_name=_('content'))
-    redirect_url = models.CharField(max_length=1024, null=True, verbose_name=_('redirect url'))
+    obj_key = models.CharField(max_length=64, verbose_name=_('obj key'))
+    business_type = models.CharField(max_length=64, verbose_name=_('business type'))
+    node = models.CharField(max_length=64, verbose_name=_('node'))
+    is_node_done = models.BooleanField(default=False, verbose_name=_('completed status'))
+    data = models.JSONField(null=True, verbose_name=_('data'))
     is_read = models.BooleanField(default=False, verbose_name=_('read status'))
     read_at = models.DateTimeField(null=True, verbose_name=_('read time'))
 
