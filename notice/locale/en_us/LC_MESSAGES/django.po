@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-27 14:10+0800\n"
+"POT-Creation-Date: 2022-04-29 14:45+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -53,7 +53,7 @@ msgstr "description"
 msgid "title"
 msgstr "title"
 
-#: models.py:64 models.py:123
+#: models.py:64
 msgid "content"
 msgstr "content"
 
@@ -97,7 +97,7 @@ msgstr "notice"
 msgid "receiver"
 msgstr "receiver"
 
-#: models.py:100 models.py:126
+#: models.py:100 models.py:129
 msgid "read time"
 msgstr "read time"
 
@@ -105,15 +105,15 @@ msgstr "read time"
 msgid "creator"
 msgstr "creator"
 
-#: models.py:110
+#: models.py:110 models.py:127
 msgid "data"
 msgstr "data"
 
-#: models.py:111 models.py:124
+#: models.py:111
 msgid "redirect url"
 msgstr "redirect url"
 
-#: models.py:112
+#: models.py:112 models.py:126
 msgid "completed status"
 msgstr "completed status"
 
@@ -121,7 +121,19 @@ msgstr "completed status"
 msgid "completed datetime"
 msgstr "completed datetime"
 
+#: models.py:123
+msgid "obj key"
+msgstr "obj key"
+
+#: models.py:124
+msgid "business type"
+msgstr "business type"
+
 #: models.py:125
+msgid "node"
+msgstr "node"
+
+#: models.py:128
 msgid "read status"
 msgstr "read status"
 
