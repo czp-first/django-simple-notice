@@ -4,6 +4,7 @@
 @Author  : Rey
 @Time    : 2022-04-01 17:03:32
 """
+import re
 from enum import Enum
 
 from django import forms
@@ -19,7 +20,6 @@ from notice.settings import NOTICE_DATETIME_FORMAT
 
 
 class NoticeForm(forms.Form):
-
     class SendWayEnum(Enum):
         NO = 'no'
         NOW = 'now'
@@ -95,3 +95,11 @@ class ChangeTimingForm(forms.Form):
             if publish_at <= timezone_now():
                 raise ValidationError(ValidationFailedDetailEnum.OUTDATE.value)
         return publish_at
+
+
+class PrivateForm(forms.Form):
+    """私信消息表单"""
+    creator = forms.CharField(required=False, max_length=64)
+    receiver = forms.CharField(required=True, max_length=64)
+    title = forms.CharField(required=True, max_length=64)
+    redirect_url = forms.URLField(required=False, max_length=1024)
