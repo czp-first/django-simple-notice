@@ -7,6 +7,7 @@
 from enum import Enum
 
 import django
+
 if django.VERSION > (4, 0):
     from django.db.models import JSONField
 else:
@@ -38,6 +39,7 @@ class IsDeletedModel(models.Model):
 
     objects = IsDeletedManager()
     all_objects = models.Manager()
+
     class Meta:
         abstract = True
 
@@ -45,6 +47,7 @@ class IsDeletedModel(models.Model):
 class NameDescModel(models.Model):
     name = models.CharField(max_length=64, verbose_name=_('name'))
     desc = models.CharField(max_length=256, verbose_name=_('description'))
+
     class Meta:
         abstract = True
 

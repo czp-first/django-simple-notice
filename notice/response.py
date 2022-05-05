@@ -17,18 +17,17 @@ class BaseFailedJsonResponse(JsonResponse):
     default_code = 'error'
 
     def __init__(self,
-        detail=None,
-        code=None,
-        encoder=DjangoJSONEncoder,
-        safe=True,
-        json_dumps_params=None,
-        **kwargs,):
+                 detail=None,
+                 code=None,
+                 encoder=DjangoJSONEncoder,
+                 safe=True,
+                 json_dumps_params=None,
+                 **kwargs, ):
         if detail is None:
             detail = self.default_detail
         if code is None:
             code = self.default_code
         super().__init__({'detail': detail, 'code': code}, encoder, safe, json_dumps_params, **kwargs)
-
 
 
 class ValidationFailed(BaseFailedJsonResponse):
@@ -64,4 +63,3 @@ class ValidationFailedDetailEnum(Enum):
     DELETE_NOT_DRAFT = _('Cant Delete Notice Which Is Not Draft')
     CHANGE_PUBLISHED = _('Cant Change Notice Which Has Been published')
     DELETE_PUBLISHED = _('Cant Delete Notice Which Has Been published')
-
