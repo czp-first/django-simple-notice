@@ -25,8 +25,8 @@ client_urlpatterns = [
 ]
 
 private_urlpatterns = [
-    path('private/', private_notice.private, name="backlog-private"),
-    path('privates/', private_notice.privates, name="backlog-privates"),
+    path('private/', private_notice.private, name="private"),
+    path('privates/', private_notice.privates, name="privates"),
     path('private/<int:pk>/', private_notice.private_notice_detail, name="private-notice-detail"),
     path('finish_private/<int:pk>/', private_notice.f_private, name="finish-private"),
     path('private/node/status/', private_notice.alter_node_status, name="alter-node-status"),
