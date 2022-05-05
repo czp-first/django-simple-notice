@@ -140,7 +140,18 @@ def f_private(request: HttpRequest, pk: int):
     return finish_private(str(request.user.pk), pk)
 
 
+# change node status
+def change_node_status(receiver: str, params: dict):
+    params["receiver"] = receiver
+    PrivateNotice.objects.filter(**params).update(is_node_done=True, updated_at=timezone.now())
+    return JsonResponse(data={})
+
+
 @require_http_methods(["PUT"])
 def alter_node_status(request: HttpRequest):
-    """TODO:变更节点状态"""
-    pass
+    # TODO:Change node state logic may change
+    if not request.user.is_authenticated:
+        return AuthFailed()
+
+    params = json.loads(request.body)
+    return change_node_status(str(request.user.pk), params)
