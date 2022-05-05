@@ -8,7 +8,6 @@ import json
 import math
 
 from django.utils import timezone
-from django.db.utils import IntegrityError
 from django.http import JsonResponse, HttpRequest
 from django.views.decorators.http import require_http_methods
 
@@ -38,10 +37,8 @@ def create_private(data: dict, creator: str, receivers: list):
     data['creator'] = creator
     data.pop("receiver")
     private_notices = [PrivateNotice(**data, receiver=receiver) for receiver in receivers]
-    try:
-        private_objs = PrivateNotice.objects.bulk_create(private_notices)
-    except IntegrityError:
-        return ValidationFailed(ValidationFailedDetailEnum.DUPLICATE_DATA.value)
+
+    private_objs = PrivateNotice.objects.bulk_create(private_notices)
     return JsonResponse(data={'id': [private_notice.id for private_notice in private_objs]})
 
 
@@ -51,7 +48,7 @@ def private(request: HttpRequest):
         return AuthFailed()
 
     if request.method == "POST":
-        data = request.POST.copy()
+        data = request.POST
         receivers = request.POST.get("receiver").split(",")
         return create_private(data, str(request.user.pk), receivers)
 
@@ -60,10 +57,10 @@ def private(request: HttpRequest):
 
 
 # list private notice
-def list_private(receiver: str, page: int, size: int, keyword: str):
+def list_private(receiver: str, page: int, size: int, title: str):
     queryset = PrivateNotice.objects.filter(receiver=receiver)
-    if keyword:
-        queryset = queryset.filter(title__contains=keyword)
+    if title:
+        queryset = queryset.filter(title__contains=title)
 
     total = queryset.count()
     max_page = math.ceil(total / size)
@@ -98,7 +95,7 @@ def privates(request: HttpRequest):
     if not request.user.is_authenticated:
         return AuthFailed()
     params = request.GET
-    keyword = params.get('keyword')
+    title = params.get('title')
     page = params.get('page', '1')
     size = params.get('size', '10')
 
@@ -109,7 +106,7 @@ def privates(request: HttpRequest):
         return ValidationFailed(ValidationFailedDetailEnum.SIZE.value)
     page = int(page)
     size = int(size)
-    return list_private(str(request.user.pk), page, size, keyword)
+    return list_private(str(request.user.pk), page, size, title)
 
 
 # get a private notice detail
@@ -143,17 +140,7 @@ def f_private(request: HttpRequest, pk: int):
     return finish_private(str(request.user.pk), pk)
 
 
-# change node status
-def change_node_status(receiver: str, params: dict):
-    params["receiver"] = receiver
-    PrivateNotice.objects.filter(**params).update(is_node_done=True, updated_at=timezone.now())
-    return JsonResponse(data={})
-
-
 @require_http_methods(["PUT"])
 def alter_node_status(request: HttpRequest):
-    if not request.user.is_authenticated:
-        return AuthFailed()
-
-    params = json.loads(request.body)
-    return change_node_status(str(request.user.pk), params)
+    """TODO:变更节点状态"""
+    pass
