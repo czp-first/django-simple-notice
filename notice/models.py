@@ -133,6 +133,3 @@ class PrivateNotice(BaseTimeModel):
 
     class Meta:
         db_table = 'notice_private_notice'
-        unique_together = (
-            ("receiver", "title", "obj_key", "business_type")
-        )
