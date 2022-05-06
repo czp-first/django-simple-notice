@@ -158,5 +158,4 @@ def alter_node_status(request: HttpRequest):
         return AuthFailed()
 
     params = json.loads(request.body)
-    print("params", params)
     return change_node_status(str(request.user.pk), params)
