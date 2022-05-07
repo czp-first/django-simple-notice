@@ -109,11 +109,16 @@ class ReceiverTag(BaseTimeModel, IsDeletedModel):
 class Backlog(BaseTimeModel):
     creator = models.CharField(verbose_name=_('creator'), max_length=64, null=True)
     receiver = models.CharField(verbose_name=_('receiver'), max_length=64)
-    title = models.CharField(null=True, max_length=64, verbose_name=_('title'))
+    is_read = models.BooleanField(default=False, verbose_name=_('read status'))
+    read_at = models.DateTimeField(null=True, verbose_name=_('read time'))
     data = JSONField(verbose_name=_('data'), null=True)
-    redirect_url = models.CharField(max_length=1024, null=True, verbose_name=_('redirect url'))
     is_done = models.BooleanField(default=False, verbose_name=_('completed status'))
     done_at = models.DateTimeField(null=True, verbose_name=_('completed datetime'))
+    handler = models.CharField(null=True, max_length=64, verbose_name=_('handler'))
+    initiator = models.CharField(null=True, max_length=64, verbose_name=_('initiator'))
+    obj_name = models.CharField(null=True, max_length=64, verbose_name=_('obj name'))
+    obj_key = models.CharField(null=True, max_length=64, verbose_name=_('obj key'))
+    obj_status = models.CharField(null=True, max_length=64, verbose_name=_('obj status'))
 
     class Meta:
         db_table = 'notice_backlog'
@@ -122,11 +127,8 @@ class Backlog(BaseTimeModel):
 class PrivateNotice(BaseTimeModel):
     creator = models.CharField(verbose_name=_('creator'), max_length=64, null=True)
     receiver = models.CharField(verbose_name=_('receiver'), max_length=64)
+    content = models.TextField(null=True, verbose_name=_('content'))
     title = models.CharField(null=True, max_length=64, verbose_name=_('title'))
-    obj_key = models.CharField(max_length=64, verbose_name=_('obj key'))
-    business_type = models.CharField(max_length=64, verbose_name=_('business type'))
-    node = models.CharField(max_length=64, verbose_name=_('node'))
-    is_node_done = models.BooleanField(default=False, verbose_name=_('completed status'))
     data = models.JSONField(null=True, verbose_name=_('data'))
     is_read = models.BooleanField(default=False, verbose_name=_('read status'))
     read_at = models.DateTimeField(null=True, verbose_name=_('read time'))
