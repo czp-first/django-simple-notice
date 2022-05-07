@@ -99,7 +99,8 @@ class ChangeTimingForm(forms.Form):
 
 class PrivateForm(forms.Form):
     """私信消息表单"""
-    creator = forms.CharField(required=False, max_length=64)
     receiver = forms.CharField(required=True, max_length=64)
-    title = forms.CharField(required=True, max_length=64)
-    redirect_url = forms.URLField(required=False, max_length=1024)
+    title = forms.CharField(required=False, max_length=64)
+    obj_key = forms.CharField(required=True, max_length=1024)
+    business_type = forms.CharField(required=True, max_length=64)
+    node = forms.CharField(required=True, max_length=64)
