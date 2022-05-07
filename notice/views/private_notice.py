@@ -14,6 +14,7 @@ from django.views.decorators.http import require_http_methods
 from notice.forms import PrivateForm
 from notice.models import PrivateNotice
 from notice.response import AuthFailed, NotFound, ValidationFailed, ValidationFailedDetailEnum
+from notice.settings import NOTICE_DATETIME_FORMAT
 
 
 # check if exist unread private notice: resp={'undo': false}
@@ -68,17 +69,20 @@ def list_private(receiver: str, page: int, size: int, title: str):
     if page > max_page:
         items = []
     else:
-        items = list(queryset.order_by('-id')[(page - 1) * size: page * size].values(
-            "id",
-            "created_at",
-            "title",
-            "obj_key",
-            "business_type",
-            "node",
-            "is_node_done",
-            "data",
-            "is_read"
-        ))
+        items = [
+            {
+                "id": item.id,
+                "created_at": item.created_at.strftime(NOTICE_DATETIME_FORMAT),
+                "title": item.title,
+                "obj_key": item.obj_key,
+                "business_type": item.business_type,
+                "node": item.node,
+                "is_node_done": item.is_node_done,
+                "data": item.data,
+                "is_read": item.is_read
+            }
+            for item in queryset.order_by('-id')[(page - 1) * size: page * size]
+        ]
 
     resp = {
         'total': total,
