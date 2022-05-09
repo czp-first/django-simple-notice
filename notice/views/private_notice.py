@@ -58,8 +58,10 @@ def private(request: HttpRequest):
 
 
 # list private notice
-def list_private(receiver: str, page: int, size: int, title: str):
+def list_private(receiver: str, page: int, size: int, title: str, is_index: bool):
     queryset = PrivateNotice.objects.filter(receiver=receiver)
+    if is_index:
+        queryset = queryset.filter(is_read=False)
     if title:
         queryset = queryset.filter(title__contains=title)
 
@@ -74,10 +76,6 @@ def list_private(receiver: str, page: int, size: int, title: str):
                 "id": item.id,
                 "created_at": item.created_at.strftime(NOTICE_DATETIME_FORMAT),
                 "title": item.title,
-                "obj_key": item.obj_key,
-                "business_type": item.business_type,
-                "node": item.node,
-                "is_node_done": item.is_node_done,
                 "data": item.data,
                 "is_read": item.is_read
             }
@@ -102,6 +100,7 @@ def privates(request: HttpRequest):
     title = params.get('title')
     page = params.get('page', '1')
     size = params.get('size', '10')
+    is_index = json.loads(params.get("is_index", 'false'))
 
     if not page.isdigit():
         return ValidationFailed(ValidationFailedDetailEnum.PAGE.value)
@@ -110,25 +109,26 @@ def privates(request: HttpRequest):
         return ValidationFailed(ValidationFailedDetailEnum.SIZE.value)
     page = int(page)
     size = int(size)
-    return list_private(str(request.user.pk), page, size, title)
+    return list_private(str(request.user.pk), page, size, title, is_index)
 
 
 # get a private notice detail
 def private_detail(receiver: str, pk: int):
-    private = PrivateNotice.objects.filter(pk=pk, receiver=receiver).values().first()
+    print("receiver", receiver)
+    private_obj: PrivateNotice = PrivateNotice.objects.filter(pk=pk, receiver=receiver).only(
+        "id", "title", "content", "created_at", "data"
+    ).first()
     if not private:
         return NotFound()
 
-    resp = dict(private)
+    resp = {
+        "id": private_obj.id,
+        "title": private_obj.title,
+        "content": private_obj.content,
+        "created_at": private_obj.created_at.strftime(NOTICE_DATETIME_FORMAT),
+        "data": {} if not private_obj.data else private_obj.data
+    }
     return JsonResponse(data=resp)
-
-
-@require_http_methods(["GET"])
-def private_notice_detail(request: HttpRequest, pk: int):
-    if not request.user.is_authenticated:
-        return AuthFailed()
-
-    return private_detail(str(request.user.pk), pk)
 
 
 # finish private
@@ -137,25 +137,12 @@ def finish_private(receiver: str, pk: int):
     return JsonResponse(data={})
 
 
-@require_http_methods(["PUT"])
-def f_private(request: HttpRequest, pk: int):
-    if not request.user.is_authenticated:
-        return AuthFailed()
-    return finish_private(str(request.user.pk), pk)
-
-
-# change node status
-def change_node_status(receiver: str, params: dict):
-    params["receiver"] = receiver
-    PrivateNotice.objects.filter(**params).update(is_node_done=True, updated_at=timezone.now())
-    return JsonResponse(data={})
-
-
-@require_http_methods(["PUT"])
-def alter_node_status(request: HttpRequest):
-    # TODO:Change node state logic may change
+@require_http_methods(["GET", "PUT"])
+def private_notice_detail(request: HttpRequest, pk: int):
     if not request.user.is_authenticated:
         return AuthFailed()
 
-    params = json.loads(request.body)
-    return change_node_status(str(request.user.pk), params)
+    if request.method == "PUT":
+        return finish_private(str(request.user.pk), pk)
+
+    return private_detail(str(request.user.pk), pk)

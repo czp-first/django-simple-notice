@@ -101,6 +101,5 @@ class PrivateForm(forms.Form):
     """私信消息表单"""
     receiver = forms.CharField(required=True, max_length=64)
     title = forms.CharField(required=False, max_length=64)
-    obj_key = forms.CharField(required=True, max_length=1024)
-    business_type = forms.CharField(required=True, max_length=64)
-    node = forms.CharField(required=True, max_length=64)
+    content = forms.CharField(required=False, max_length=64)
+    data = forms.JSONField(required=False)
