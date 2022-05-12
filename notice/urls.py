@@ -9,6 +9,7 @@ from django.urls import path
 from notice.views import admin as admin_views
 from notice.views import client as client_views
 from notice.views import private_notice
+from notice.views import backlog
 
 admin_urlpatterns = [
     path('admin/', admin_views.notice, name='admin-notice'),
@@ -28,8 +29,13 @@ private_urlpatterns = [
     path('private/', private_notice.private, name="private"),
     path('privates/', private_notice.privates, name="privates"),
     path('private/<int:pk>/', private_notice.private_notice_detail, name="private-notice-detail"),
-    path('finish_private/<int:pk>/', private_notice.f_private, name="finish-private"),
-    path('private/node/status/', private_notice.alter_node_status, name="alter-node-status"),
 ]
 
-urlpatterns = admin_urlpatterns + client_urlpatterns + private_urlpatterns
+backlog_urlpatterns = [
+    path('backlog/', backlog.backlog, name="backlog"),
+    path('backlogs/', backlog.backlogs, name="backlogs"),
+    path('backlog/<int:pk>/', backlog.read_backlog, name="read-backlog"),
+    path('backlog/current_node/<int:pk>/', backlog.handle_backlog, name="handle-backlog"),
+]
+
+urlpatterns = admin_urlpatterns + client_urlpatterns + private_urlpatterns + backlog_urlpatterns
