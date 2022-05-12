@@ -5,6 +5,7 @@
 @Time    : 2022-04-01 17:03:32
 """
 import re
+import json
 from enum import Enum
 
 from django import forms
@@ -103,3 +104,25 @@ class PrivateForm(forms.Form):
     title = forms.CharField(required=False, max_length=64)
     content = forms.CharField(required=False, max_length=64)
     data = forms.JSONField(required=False)
+
+
+class BacklogForm(forms.Form):
+    """待办消息表单"""
+    data = forms.JSONField(required=False)
+    is_done = forms.BooleanField(required=False)
+    receiver = forms.CharField(required=True, max_length=64)
+    initiator = forms.CharField(required=False, max_length=64)
+    obj_name = forms.CharField(required=False, max_length=64)
+    obj_key = forms.CharField(required=False, max_length=64)
+    obj_status = forms.CharField(required=False, max_length=64)
+    handler = forms.JSONField(required=False)
+
+    def clean_handler(self):
+        handler = self.cleaned_data.get("handler")
+        if handler is None:
+            return handler
+
+        if not isinstance(handler, list):
+            return ValidationError("handler字段类型错误")
+
+        return handler
