@@ -60,8 +60,10 @@ def private(request: HttpRequest):
 # list private notice
 def list_private(receiver: str, page: int, size: int, title: str, is_index: bool):
     queryset = PrivateNotice.objects.filter(receiver=receiver)
+
     if is_index:
         queryset = queryset.filter(is_read=False)
+
     if title:
         queryset = queryset.filter(title__contains=title)
 
@@ -114,10 +116,10 @@ def privates(request: HttpRequest):
 
 # get a private notice detail
 def private_detail(receiver: str, pk: int):
-    print("receiver", receiver)
-    private_obj: PrivateNotice = PrivateNotice.objects.filter(pk=pk, receiver=receiver).only(
-        "id", "title", "content", "created_at", "data"
-    ).first()
+    private_obj: PrivateNotice = PrivateNotice.objects.filter(
+        pk=pk,
+        receiver=receiver
+    ).only("id", "title", "content", "created_at", "data").first()
     if not private:
         return NotFound()
 

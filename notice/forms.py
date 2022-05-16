@@ -4,8 +4,6 @@
 @Author  : Rey
 @Time    : 2022-04-01 17:03:32
 """
-import re
-import json
 from enum import Enum
 
 from django import forms
@@ -15,7 +13,7 @@ from django.core.exceptions import ValidationError
 from django.utils.timezone import get_default_timezone, now as timezone_now
 from django.utils.translation import gettext_lazy as _
 
-from notice.models import NoticeType, ReceiverType
+from notice.models import NoticeType, ReceiverType, Backlog
 from notice.response import ValidationFailedDetailEnum
 from notice.settings import NOTICE_DATETIME_FORMAT
 
@@ -115,14 +113,5 @@ class BacklogForm(forms.Form):
     obj_name = forms.CharField(required=False, max_length=64)
     obj_key = forms.CharField(required=False, max_length=64)
     obj_status = forms.CharField(required=False, max_length=64)
-    handler = forms.JSONField(required=False)
-
-    def clean_handler(self):
-        handler = self.cleaned_data.get("handler")
-        if handler is None:
-            return handler
-
-        if not isinstance(handler, list):
-            return ValidationError("handler字段类型错误")
-
-        return handler
+    handler = SimpleArrayField(required=False, base_field=forms.IntegerField(required=False, min_value=1))
+    candidates = SimpleArrayField(required=False, base_field=forms.IntegerField(required=False, min_value=1))
