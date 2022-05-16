@@ -35,6 +35,7 @@ backlog_urlpatterns = [
     path('backlog/', backlog.backlog, name="backlog"),
     path('backlogs/', backlog.backlogs, name="backlogs"),
     path('backlog/<int:pk>/', backlog.read_backlog, name="read-backlog"),
+    path('backlog/handler/', backlog.handler_list, name="handler-list"),
     path('backlog/current_node/<int:pk>/', backlog.handle_backlog, name="handle-backlog"),
 ]
 
