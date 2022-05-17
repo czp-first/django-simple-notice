@@ -4,19 +4,19 @@
 @Author  : Rey
 @Time    : 2022-03-30 11:44:57
 """
-from enum import Enum
-
 import django
 
 if django.VERSION > (4, 0):
     from django.db.models import JSONField
 else:
     from django.contrib.postgres.fields import JSONField
-from django.contrib.postgres.fields import ArrayField
+
+from enum import Enum
 from django.db import models
 from django.db.models import JSONField
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.contrib.postgres.fields import ArrayField
 
 from notice.settings import NOTICE_DATETIME_FORMAT
 
@@ -114,11 +114,13 @@ class Backlog(BaseTimeModel):
     data = JSONField(verbose_name=_('data'), null=True)
     is_done = models.BooleanField(default=False, verbose_name=_('completed status'))
     done_at = models.DateTimeField(null=True, verbose_name=_('completed datetime'))
-    handler = models.CharField(null=True, max_length=64, verbose_name=_('handler'))
+    handler = ArrayField(models.IntegerField(), null=True, verbose_name=_('handler'))
     initiator = models.CharField(null=True, max_length=64, verbose_name=_('initiator'))
     obj_name = models.CharField(null=True, max_length=64, verbose_name=_('obj name'))
     obj_key = models.CharField(null=True, max_length=64, verbose_name=_('obj key'))
     obj_status = models.CharField(null=True, max_length=64, verbose_name=_('obj status'))
+    batch = models.CharField(null=True, max_length=36, verbose_name=_('batch'))
+    candidates = ArrayField(models.IntegerField(), null=True, verbose_name=_('candidates'))
 
     class Meta:
         db_table = 'notice_backlog'
