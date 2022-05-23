@@ -20,24 +20,9 @@ from notice.response import AuthFailed, NotFound, ValidationFailed, ValidationFa
 from notice.settings import NOTICE_DATETIME_FORMAT
 
 
-def _check_receiver(func):
-    """校验receiver, creator参数类型, receiver, creator参数类型：{request.user.pk}-{request.company.pk}"""
-
-    def wrap(*args, **kwargs):
-        for key, value in kwargs.items():
-            if value is None or re.match(r"^[1-9]\d*:([1-9]\d*$)", value) is None:
-                return ValidationFailed(ValidationFailedDetailEnum.RECEIVER_TYPE.value)
-
-            if key != "creator" and not Backlog.objects.filter(**kwargs).exists():
-                return NotFound()
-        return func(*args, **kwargs)
-
-    return wrap
-
-
 # Add new backlog
-@_check_receiver
-def create_backlog(data: dict, receivers: list, creator: str = None):
+def create_backlog(data: dict, receivers: list, creator: str):
+
     if not isinstance(receivers, list):
         return ValidationFailed(ValidationFailedDetailEnum.RECEIVER_TYPE.value)
 
@@ -55,8 +40,7 @@ def create_backlog(data: dict, receivers: list, creator: str = None):
 
 
 # Gets the current user backlog number
-@_check_receiver
-def get_backlog(receiver: str = None):
+def get_backlog(receiver: str):
     if not Backlog.objects.filter(receiver=receiver).exists():
         return NotFound()
 
@@ -82,13 +66,10 @@ def backlog(request: HttpRequest):
         data = json.loads(request.body)
         receivers = data.get("receiver")
 
-        if not isinstance(receivers, list):
-            return ValidationFailed(ValidationFailedDetailEnum.RECEIVER_TYPE.value)
-
-        return create_backlog(data, receivers, creator=str(request.user.pk))
+        return create_backlog(data, receivers, str(request.user.pk))
 
     receiver = request.user.pk
-    return get_backlog(receiver=receiver)
+    return get_backlog(receiver)
 
 
 def check_params(params: dict):
@@ -195,8 +176,7 @@ def filter_conditions(receiver: str, params: dict):
 
 
 #  The backlog message list
-@_check_receiver
-def list_backlog(page: int, size: int, params: dict, receiver: str = None):
+def list_backlog(page: int, size: int, params: dict, receiver: str):
     is_valid, params = check_params(params)
     if not is_valid:
         return params
@@ -256,12 +236,13 @@ def backlogs(request: HttpRequest):
     if not is_valid:
         return params
 
-    return list_backlog(int(page), int(size), params, receiver=str(request.user.pk))
+    return list_backlog(int(page), int(size), params, str(request.user.pk))
 
 
 # The backlog message is set to read
-@_check_receiver
-def backlog_read(pk: int, receiver: str = None):
+def backlog_read(pk: int, receiver: str):
+    if not Backlog.objects.filter(receiver=receiver).exists():
+        return NotFound()
     if not Backlog.objects.filter(pk=pk).exists():
         return NotFound()
     Backlog.objects.filter(receiver=receiver, id=pk).update(is_read=True, read_at=timezone.now())
@@ -273,11 +254,10 @@ def read_backlog(request: HttpRequest, pk: int):
     if not request.user.is_authenticated:
         return AuthFailed()
 
-    return backlog_read(pk, receiver=str(request.user.pk))
+    return backlog_read(pk, str(request.user.pk))
 
 
-@_check_receiver
-def handlers(receiver: str = None):
+def handlers(receiver: str):
     backlog_obj: Backlog = Backlog.objects.filter(initiator=receiver).first()
     if not backlog_obj:
         return NotFound()
@@ -293,12 +273,11 @@ def handler_list(request: HttpRequest):
     if not request.user.is_authenticated:
         return AuthFailed()
 
-    return handlers(receiver=str(request.user.pk))
+    return handlers(str(request.user.pk))
 
 
 # handle the current node backlog
-@_check_receiver
-def current_node_backlog(pk: int, node_handlers: list, receiver: str = None):
+def current_node_backlog(pk: int, node_handlers: list, receiver: str):
     if not Backlog.objects.filter(receiver=receiver, id=pk).exists():
         return NotFound()
     batch = Backlog.objects.get(id=pk).batch
@@ -316,4 +295,4 @@ def handle_backlog(request: HttpRequest, pk: int):
         return AuthFailed()
     node_handlers = json.loads(request.body).get("node_handlers")
 
-    return current_node_backlog(pk, node_handlers, receiver=str(request.user.pk))
+    return current_node_backlog(pk, node_handlers, str(request.user.pk))
