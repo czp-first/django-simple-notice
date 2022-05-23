@@ -66,3 +66,5 @@ class ValidationFailedDetailEnum(Enum):
 
     BACKLOG_TYPE = _('Invalid Backlog Type')
     TIME_TYPE = _("Invalid Time Type")
+    FLOW_TYPE = _("Invalid Flow Type")
+    HANDLE_TYPE = _("Invalid Handle Type")

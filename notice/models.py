@@ -13,7 +13,6 @@ else:
 
 from enum import Enum
 from django.db import models
-from django.db.models import JSONField
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.fields import ArrayField
@@ -114,13 +113,14 @@ class Backlog(BaseTimeModel):
     data = JSONField(verbose_name=_('data'), null=True)
     is_done = models.BooleanField(default=False, verbose_name=_('completed status'))
     done_at = models.DateTimeField(null=True, verbose_name=_('completed datetime'))
-    handler = ArrayField(models.IntegerField(), null=True, verbose_name=_('handler'))
+    handler = ArrayField(models.CharField(max_length=64), null=True, verbose_name=_('handler'))
     initiator = models.CharField(null=True, max_length=64, verbose_name=_('initiator'))
+    initiator_name = models.CharField(null=True, max_length=64, verbose_name=_('initiator name'))
     obj_name = models.CharField(null=True, max_length=64, verbose_name=_('obj name'))
     obj_key = models.CharField(null=True, max_length=64, verbose_name=_('obj key'))
     obj_status = models.CharField(null=True, max_length=64, verbose_name=_('obj status'))
     batch = models.CharField(null=True, max_length=36, verbose_name=_('batch'))
-    candidates = ArrayField(models.IntegerField(), null=True, verbose_name=_('candidates'))
+    candidates = ArrayField(models.CharField(max_length=64),  null=True, verbose_name=_('candidates'))
 
     class Meta:
         db_table = 'notice_backlog'
