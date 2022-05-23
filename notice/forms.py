@@ -104,15 +104,6 @@ class PrivateForm(forms.Form, SimpleArrayField):
     content = forms.CharField(required=False, max_length=64)
     data = forms.JSONField(required=False)
 
-    def clean_receiver(self):
-        receiver = self.cleaned_data.get("receiver")
-
-        for value in receiver:
-            if re.match(r"^[1-9]\d*:([1-9]\d*$)", value) is None:
-                raise ValidationError(ValidationFailedDetailEnum.RECEIVER_TYPE.value)
-
-        return receiver
-
 
 class BacklogForm(forms.Form):
     """待办消息表单"""
@@ -126,12 +117,3 @@ class BacklogForm(forms.Form):
     obj_status = forms.CharField(required=False, max_length=64)
     handler = SimpleArrayField(required=False, base_field=forms.CharField(required=False))
     candidates = SimpleArrayField(required=False, base_field=forms.CharField(required=False))
-
-    def clean_receiver(self):
-        receiver = self.cleaned_data.get("receiver")
-
-        for value in receiver:
-            if re.match(r"^[1-9]\d*:([1-9]\d*$)", value) is None:
-                raise ValidationError(ValidationFailedDetailEnum.RECEIVER_TYPE.value)
-
-        return receiver

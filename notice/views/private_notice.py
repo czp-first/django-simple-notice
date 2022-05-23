@@ -4,7 +4,6 @@
 @Author  : Rey, wangliang
 @Time    : 2022-04-27 13:25:37
 """
-import re
 import json
 import math
 
@@ -18,27 +17,11 @@ from notice.response import AuthFailed, NotFound, ValidationFailed, ValidationFa
 from notice.settings import NOTICE_DATETIME_FORMAT
 
 
-def _check_receiver(func):
-    """
-        校验receiver, creator参数类型, receiver, creator参数类型：
-        {request.user.pk}-{request.company.pk}
-    """
-
-    def wrap(*args, **kwargs):
-        for key, value in kwargs.items():
-            if value is None or re.match(r"^[1-9]\d*-([1-9]\d*$)", value) is None:
-                return ValidationFailed(ValidationFailedDetailEnum.RECEIVER_TYPE.value)
-
-            if key != "creator" and not PrivateNotice.objects.filter(**kwargs).exists():
-                return NotFound()
-        return func(*args, **kwargs)
-
-    return wrap
-
-
 # check if exist unread private notice: resp={'undo': false}
-@_check_receiver
-def unread_private(receiver: str = None):
+def unread_private(receiver: str):
+    if not PrivateNotice.objects.filter(receiver=receiver).exists():
+        return NotFound()
+
     filter_params = {
         'is_read': False,
         'receiver': receiver
@@ -49,8 +32,7 @@ def unread_private(receiver: str = None):
 
 
 # create private notice:
-@_check_receiver
-def create_private(data: dict, receivers: list, creator: str = None):
+def create_private(data: dict, receivers: list, creator: str):
 
     if not isinstance(receivers, list):
         return ValidationFailed(ValidationFailedDetailEnum.RECEIVER_TYPE.value)
@@ -80,12 +62,11 @@ def private(request: HttpRequest):
         return create_private(data,  receivers, creator=str(request.user.pk))
 
     receiver = request.user.pk
-    return unread_private(receiver=receiver)
+    return unread_private(receiver)
 
 
 # list private notice
-@_check_receiver
-def list_private(page: int, size: int, title: str, is_index: bool, receiver: str = None):
+def list_private(page: int, size: int, title: str, is_index: bool, receiver: str):
     queryset = PrivateNotice.objects.filter(receiver=receiver)
 
     if is_index:
@@ -140,12 +121,11 @@ def privates(request: HttpRequest):
     page = int(page)
     size = int(size)
 
-    return list_private(page, size, title, is_index, receiver=str(request.user.pk))
+    return list_private(page, size, title, is_index, str(request.user.pk))
 
 
 # get a private notice detail
-@_check_receiver
-def private_detail(pk: int, receiver: str = None):
+def private_detail(pk: int, receiver: str):
     private_obj: PrivateNotice = PrivateNotice.objects.filter(
         pk=pk,
         receiver=receiver
@@ -164,8 +144,7 @@ def private_detail(pk: int, receiver: str = None):
 
 
 # finish private
-@_check_receiver
-def finish_private(pk: int, receiver: str = None):
+def finish_private(pk: int, receiver: str):
     PrivateNotice.objects.filter(receiver=receiver, id=pk).update(is_read=True, read_at=timezone.now())
     return JsonResponse(data={})
 
@@ -176,6 +155,6 @@ def private_notice_detail(request: HttpRequest, pk: int):
         return AuthFailed()
 
     if request.method == "PUT":
-        return finish_private(pk, receiver=str(request.user.pk))
+        return finish_private(pk, str(request.user.pk))
 
     return private_detail(pk, receiver=str(request.user.pk))
