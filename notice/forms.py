@@ -4,7 +4,6 @@
 @Author  : Rey
 @Time    : 2022-04-01 17:03:32
 """
-import re
 from enum import Enum
 
 from django import forms
@@ -102,12 +101,10 @@ class PrivateForm(forms.Form, SimpleArrayField):
     receiver = SimpleArrayField(required=True, base_field=forms.CharField(required=False))
     title = forms.CharField(required=False, max_length=64)
     content = forms.CharField(required=False, max_length=64)
-    data = forms.JSONField(required=False)
 
 
 class BacklogForm(forms.Form):
     """待办消息表单"""
-    data = forms.JSONField(required=False)
     is_done = forms.BooleanField(required=False)
     receiver = SimpleArrayField(required=True, base_field=forms.CharField(required=False))
     initiator = forms.CharField(required=False, max_length=64)
