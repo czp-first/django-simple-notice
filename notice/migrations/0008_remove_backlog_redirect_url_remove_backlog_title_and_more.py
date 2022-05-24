@@ -10,10 +10,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='backlog',
-            name='redirect_url',
-        ),
+
         migrations.RemoveField(
             model_name='backlog',
             name='title',
@@ -33,45 +30,5 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='privatenotice',
             name='obj_key',
-        ),
-        migrations.AddField(
-            model_name='backlog',
-            name='handler',
-            field=models.CharField(max_length=64, null=True, verbose_name='handler'),
-        ),
-        migrations.AddField(
-            model_name='backlog',
-            name='initiator',
-            field=models.CharField(max_length=64, null=True, verbose_name='initiator'),
-        ),
-        migrations.AddField(
-            model_name='backlog',
-            name='is_read',
-            field=models.BooleanField(default=False, verbose_name='read status'),
-        ),
-        migrations.AddField(
-            model_name='backlog',
-            name='obj_key',
-            field=models.CharField(max_length=64, null=True, verbose_name='obj key'),
-        ),
-        migrations.AddField(
-            model_name='backlog',
-            name='obj_name',
-            field=models.CharField(max_length=64, null=True, verbose_name='obj name'),
-        ),
-        migrations.AddField(
-            model_name='backlog',
-            name='obj_status',
-            field=models.CharField(max_length=64, null=True, verbose_name='obj status'),
-        ),
-        migrations.AddField(
-            model_name='backlog',
-            name='read_at',
-            field=models.DateTimeField(null=True, verbose_name='read time'),
-        ),
-        migrations.AddField(
-            model_name='privatenotice',
-            name='content',
-            field=models.TextField(null=True, verbose_name='content'),
         ),
     ]

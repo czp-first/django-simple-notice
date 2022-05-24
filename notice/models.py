@@ -131,7 +131,7 @@ class PrivateNotice(BaseTimeModel):
     receiver = models.CharField(verbose_name=_('receiver'), max_length=64)
     content = models.TextField(null=True, verbose_name=_('content'))
     title = models.CharField(null=True, max_length=64, verbose_name=_('title'))
-    data = models.JSONField(null=True, verbose_name=_('data'))
+    data = JSONField(null=True, verbose_name=_('data'))
     is_read = models.BooleanField(default=False, verbose_name=_('read status'))
     read_at = models.DateTimeField(null=True, verbose_name=_('read time'))
 
