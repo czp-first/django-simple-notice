@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 """
 @Summary : backlog
-@Author  : Rey
+@Author  : Rey, wangliang
 @Time    : 2022-04-27 13:25:25
 """
 import re
@@ -21,7 +21,11 @@ from notice.settings import NOTICE_DATETIME_FORMAT
 
 
 # Add new backlog
-def create_backlog(data: dict, creator: str, receivers: list):
+def create_backlog(data: dict, receivers: list, creator: str):
+
+    if not isinstance(receivers, list):
+        return ValidationFailed(ValidationFailedDetailEnum.RECEIVER_TYPE.value)
+
     f = BacklogForm(data)
     if not f.is_valid():
         return ValidationFailed(f.errors)
@@ -39,8 +43,18 @@ def create_backlog(data: dict, creator: str, receivers: list):
 def get_backlog(receiver: str):
     if not Backlog.objects.filter(receiver=receiver).exists():
         return NotFound()
-    num = Backlog.objects.filter(receiver=receiver, is_done=False).count()
-    return JsonResponse({"num": num})
+
+    backlog_num = Backlog.objects.filter(receiver=receiver, is_done=False).count()
+    processed_num = Backlog.objects.filter(receiver=receiver, is_done=True).count()
+    initiator_num = Backlog.objects.filter(receiver=receiver, initiator=receiver).count()
+    total = backlog_num + processed_num
+    data = {
+        "pending_num": backlog_num,
+        "processed_num": processed_num,
+        "initiator_num": initiator_num,
+        "total": total
+    }
+    return JsonResponse(data)
 
 
 @require_http_methods(["GET", "POST"])
@@ -49,17 +63,52 @@ def backlog(request: HttpRequest):
         return AuthFailed()
 
     if request.method == "POST":
-        data = request.POST
-        receivers = request.POST.get("receiver").split(",")
-        return create_backlog(data, str(request.user.pk), receivers)
+        data = json.loads(request.body)
+        receivers = data.get("receiver")
+
+        return create_backlog(data, receivers, str(request.user.pk))
 
     receiver = request.user.pk
     return get_backlog(receiver)
 
 
-#  The backlog message list
-def list_backlog(receiver: str, page: int, size: int, params: dict):
-    queryset = Backlog.objects.filter(receiver=receiver)
+def check_params(params: dict):
+    """参数校验"""
+
+    backlog_type = params.get("backlog_type", "0")
+    start = params.get("start")
+    end = params.get("end")
+    flow_status = params.get("flow_status")
+    handle_status = params.get("handle_status")
+    data_format = r'^\d{4}-\d{2}-\d{2}\s\d{1,2}:\d{1,2}:\d{1,2}$'
+
+    if backlog_type not in ("0", "1", "2", "3", "4") or not backlog_type.isdigit():
+        return False, ValidationFailed(ValidationFailedDetailEnum.BACKLOG_TYPE.value)
+
+    if start:
+        if not re.match(data_format, start):
+            return False, ValidationFailed(ValidationFailedDetailEnum.TIME_TYPE.value)
+
+    if end:
+        if not re.match(data_format, end):
+            return False, ValidationFailed(ValidationFailedDetailEnum.TIME_TYPE.value)
+        if start and re.match(data_format, start):
+            if end < start:
+                return False, ValidationFailed(ValidationFailedDetailEnum.TIME_TYPE.value)
+
+    if flow_status:
+        if not flow_status.isdigit() or flow_status not in ("0", "1", "2", "3", "4"):
+            return False, ValidationFailed(ValidationFailedDetailEnum.FLOW_TYPE.value)
+
+    if handle_status:
+        if handle_status not in ("0", "1", "2") or not handle_status.isdigit():
+            return False, ValidationFailed(ValidationFailedDetailEnum.HANDLE_TYPE.value)
+
+    return True, params
+
+
+def filter_conditions(receiver: str, params: dict):
+    """条件过滤器"""
     # 全部待办 ：0
     # 1 待办--待处理 2 待办--已处理  3 待办--我发起的
     # 4 待办提醒 首页列表待办（通过控制page、size控制页面展示多少条数据）
@@ -89,7 +138,7 @@ def list_backlog(receiver: str, page: int, size: int, params: dict):
 
             if key == "start":
                 condition = [
-                        ("created_at__gte", value)
+                    ("created_at__gte", value)
                 ]
 
             if key == "end":
@@ -123,6 +172,17 @@ def list_backlog(receiver: str, page: int, size: int, params: dict):
             q.children.extend(condition)
             con.add(q, "AND")
 
+    return con
+
+
+#  The backlog message list
+def list_backlog(page: int, size: int, params: dict, receiver: str):
+    is_valid, params = check_params(params)
+    if not is_valid:
+        return params
+
+    queryset = Backlog.objects.filter(receiver=receiver)
+    con = filter_conditions(receiver, params)
     queryset = queryset.filter(con)
     total = queryset.count()
     max_page = math.ceil(total / size)
@@ -165,15 +225,6 @@ def backlogs(request: HttpRequest):
     params = request.GET.dict()
     page = params.pop('page', "1")
     size = params.pop('size', "10")
-    backlog_type = params.get("backlog_type", "0")
-    start = params.get("start")
-    end = params.get("end")
-    flow_status = params.get("flow_status")
-    handle_status = params.get("handle_status")
-    data_format = r'^\d{4}-\d{2}-\d{2}\s\d{1,2}:\d{1,2}:\d{1,2}$'
-
-    if backlog_type not in ("0", "1", "2", "3", "4") or not backlog_type.isdigit():
-        return ValidationFailed(ValidationFailedDetailEnum.BACKLOG_TYPE.value)
 
     if not page.isdigit():
         return ValidationFailed(ValidationFailedDetailEnum.PAGE.value)
@@ -181,30 +232,19 @@ def backlogs(request: HttpRequest):
     if not size.isdigit():
         return ValidationFailed(ValidationFailedDetailEnum.SIZE.value)
 
-    if start:
-        if not re.match(data_format, start):
-            return ValidationFailed(ValidationFailedDetailEnum.TIME_TYPE.value)
+    is_valid, params = check_params(params)
+    if not is_valid:
+        return params
 
-    if end:
-        if not re.match(data_format, end):
-            return ValidationFailed(ValidationFailedDetailEnum.TIME_TYPE.value)
-        if start and re.match(data_format, start):
-            if end < start:
-                return ValidationFailed(ValidationFailedDetailEnum.TIME_TYPE.value)
-
-    if flow_status:
-        if not flow_status.isdigit() or flow_status not in ("0", "1", "2", "3", "4"):
-            return ValidationFailed(ValidationFailedDetailEnum.BACKLOG_TYPE.value)
-
-    if handle_status:
-        if handle_status not in ("0", "1", "2") or not handle_status.isdigit():
-            return ValidationFailed(ValidationFailedDetailEnum.BACKLOG_TYPE.value)
-
-    return list_backlog(str(request.user.pk), int(page), int(size), params)
+    return list_backlog(int(page), int(size), params, str(request.user.pk))
 
 
 # The backlog message is set to read
-def backlog_read(receiver: str, pk: int):
+def backlog_read(pk: int, receiver: str):
+    if not Backlog.objects.filter(receiver=receiver).exists():
+        return NotFound()
+    if not Backlog.objects.filter(pk=pk).exists():
+        return NotFound()
     Backlog.objects.filter(receiver=receiver, id=pk).update(is_read=True, read_at=timezone.now())
     return JsonResponse(data={})
 
@@ -214,14 +254,18 @@ def read_backlog(request: HttpRequest, pk: int):
     if not request.user.is_authenticated:
         return AuthFailed()
 
-    return backlog_read(str(request.user.pk), pk)
+    return backlog_read(pk, str(request.user.pk))
 
 
 def handlers(receiver: str):
-    backlog_obj: Backlog = Backlog.objects.filter(initiator=receiver).only("candidates").first()
+    backlog_obj: Backlog = Backlog.objects.filter(initiator=receiver).first()
     if not backlog_obj:
         return NotFound()
-    return JsonResponse({"handler_list": backlog_obj.handler})
+    handler_infos: Backlog = Backlog.objects.filter(initiator=receiver).values("handler")
+    handler_set = set()
+    for handler in handler_infos:
+        handler_set |= (set(handler.get("handler")))
+    return JsonResponse({"handler_list": list(handler_set)})
 
 
 @require_http_methods(["GET"])
@@ -233,7 +277,7 @@ def handler_list(request: HttpRequest):
 
 
 # handle the current node backlog
-def current_node_backlog(receiver: str, pk: int, node_handlers: list):
+def current_node_backlog(pk: int, node_handlers: list, receiver: str):
     if not Backlog.objects.filter(receiver=receiver, id=pk).exists():
         return NotFound()
     batch = Backlog.objects.get(id=pk).batch
@@ -251,4 +295,4 @@ def handle_backlog(request: HttpRequest, pk: int):
         return AuthFailed()
     node_handlers = json.loads(request.body).get("node_handlers")
 
-    return current_node_backlog(str(request.user.pk), pk, node_handlers)
+    return current_node_backlog(pk, node_handlers, str(request.user.pk))
