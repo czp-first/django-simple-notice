@@ -1,6 +1,10 @@
 Version History
 ===============
 
+Version 0.1.6
+* private notice
+* backlog
+
 Version 0.1.5
 --------------
 * receivertag.receiver is not limited to int
