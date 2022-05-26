@@ -192,6 +192,7 @@ def list_backlog(page: int, size: int, params: dict, receiver: str):
     else:
         items = [
             {
+                "title": item.title,
                 "id": item.id,
                 "created_at": item.created_at.strftime(NOTICE_DATETIME_FORMAT),
                 "is_done": item.is_done,
@@ -261,10 +262,10 @@ def handlers(receiver: str):
     backlog_obj: Backlog = Backlog.objects.filter(initiator=receiver).first()
     if not backlog_obj:
         return NotFound()
-    handler_infos: Backlog = Backlog.objects.filter(initiator=receiver).values("handler")
+    handler_infos: Backlog = Backlog.objects.filter(initiator=receiver).values("candidates")
     handler_set = set()
     for handler in handler_infos:
-        handler_set |= (set(handler.get("handler")))
+        handler_set |= (set(handler.get("candidates")))
     return JsonResponse({"handler_list": list(handler_set)})
 
 
@@ -283,7 +284,7 @@ def current_node_backlog(pk: int, node_handlers: list, receiver: str):
     batch = Backlog.objects.get(id=pk).batch
     Backlog.objects.filter(batch=batch).update(
         is_done=True, done_at=timezone.now(),
-        handler=node_handlers, candidates=node_handlers,
+        handler=node_handlers, candidates=node_handlers
     )
 
     return JsonResponse({})

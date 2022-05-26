@@ -4,6 +4,7 @@
 @Author  : Rey
 @Time    : 2022-04-01 17:03:32
 """
+import json
 from enum import Enum
 
 from django import forms
@@ -103,6 +104,70 @@ class PrivateForm(forms.Form, SimpleArrayField):
     content = forms.CharField(required=False, max_length=64)
 
 
+class InvalidJSONInput(str):
+    pass
+
+
+class JSONString(str):
+    pass
+
+
+class JSONField(forms.CharField):
+    default_error_messages = {
+        "invalid": _("Enter a valid JSON."),
+    }
+    widget = forms.Textarea
+
+    def __init__(self, encoder=None, decoder=None, **kwargs):
+        self.encoder = encoder
+        self.decoder = decoder
+        super().__init__(**kwargs)
+
+    def to_python(self, value):
+        if self.disabled:
+            return value
+        if value in self.empty_values:
+            return None
+        elif isinstance(value, (list, dict, int, float, JSONString)):
+            return value
+        try:
+            converted = json.loads(value, cls=self.decoder)
+        except json.JSONDecodeError:
+            raise ValidationError(
+                self.error_messages["invalid"],
+                code="invalid",
+                params={"value": value},
+            )
+        if isinstance(converted, str):
+            return JSONString(converted)
+        else:
+            return converted
+
+    def bound_data(self, data, initial):
+        if self.disabled:
+            return initial
+        if data is None:
+            return None
+        try:
+            return json.loads(data, cls=self.decoder)
+        except json.JSONDecodeError:
+            return InvalidJSONInput(data)
+
+    def prepare_value(self, value):
+        if isinstance(value, InvalidJSONInput):
+            return value
+        return json.dumps(value, ensure_ascii=False, cls=self.encoder)
+
+    def has_changed(self, initial, data):
+        if super().has_changed(initial, data):
+            return True
+        # For purposes of seeing whether something has changed, True isn't the
+        # same as 1 and the order of keys doesn't matter.
+        return json.dumps(initial, sort_keys=True, cls=self.encoder) != json.dumps(
+            self.to_python(data), sort_keys=True, cls=self.encoder
+        )
+
+
 class BacklogForm(forms.Form):
     """待办消息表单"""
     is_done = forms.BooleanField(required=False)
@@ -114,3 +179,4 @@ class BacklogForm(forms.Form):
     obj_status = forms.CharField(required=False, max_length=64)
     handler = SimpleArrayField(required=False, base_field=forms.CharField(required=False))
     candidates = SimpleArrayField(required=False, base_field=forms.CharField(required=False))
+    data = JSONField(required=False)
