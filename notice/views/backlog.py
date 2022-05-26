@@ -200,6 +200,7 @@ def list_backlog(page: int, size: int, params: dict, receiver: str):
                 "creator": item.creator,
                 "handler": item.handler,
                 "initiator": item.initiator,
+                "initiator_name": item.initiator_name,
                 "obj_key": item.obj_key,
                 "obj_name": item.obj_name,
                 "obj_status": item.obj_status,
