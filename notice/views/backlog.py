@@ -29,11 +29,12 @@ def create_backlog(data: dict, receivers: list, creator: str):
     f = BacklogForm(data)
     if not f.is_valid():
         return ValidationFailed(f.errors)
-    data = f.cleaned_data
-    data['creator'] = creator
-    data.pop("receiver")
-    data["batch"] = uuid.uuid4()
-    backlog_notices = [Backlog(**data, receiver=receiver, ) for receiver in receivers]
+    clean_data = f.cleaned_data
+    clean_data['creator'] = creator
+    clean_data['data'] = data.get("data")
+    clean_data.pop("receiver")
+    clean_data["batch"] = uuid.uuid4()
+    backlog_notices = [Backlog(**clean_data, receiver=receiver, ) for receiver in receivers]
     backlog_objs = Backlog.objects.bulk_create(backlog_notices)
 
     return JsonResponse(data={'id': [backlog_notice.id for backlog_notice in backlog_objs]})
