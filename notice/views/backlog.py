@@ -193,13 +193,13 @@ def list_backlog(page: int, size: int, params: dict, receiver: str):
     else:
         items = [
             {
-                "title": item.title,
                 "id": item.id,
                 "created_at": item.created_at.strftime(NOTICE_DATETIME_FORMAT),
                 "is_done": item.is_done,
                 "creator": item.creator,
                 "handler": item.handler,
                 "initiator": item.initiator,
+                "initiator_name": item.initiator_name,
                 "obj_key": item.obj_key,
                 "obj_name": item.obj_name,
                 "obj_status": item.obj_status,
