@@ -106,21 +106,30 @@ class ReceiverTag(BaseTimeModel, IsDeletedModel):
 
 
 class Backlog(BaseTimeModel):
+    is_deleted = models.BooleanField(default=False, verbose_name=_('delete tag'))
     creator = models.CharField(verbose_name=_('creator'), max_length=64, null=True)
     receiver = models.CharField(verbose_name=_('receiver'), max_length=64)
     is_read = models.BooleanField(default=False, verbose_name=_('read status'))
     read_at = models.DateTimeField(null=True, verbose_name=_('read time'))
-    data = JSONField(verbose_name=_('data'), null=True)
     is_done = models.BooleanField(default=False, verbose_name=_('completed status'))
     done_at = models.DateTimeField(null=True, verbose_name=_('completed datetime'))
-    handler = ArrayField(models.CharField(max_length=64), null=True, verbose_name=_('handler'))
+    candidates = ArrayField(models.CharField(max_length=64),  null=True, verbose_name=_('candidates'))
+    handlers = ArrayField(models.CharField(max_length=64), null=True, verbose_name=_('handler'))
     initiator = models.CharField(null=True, max_length=64, verbose_name=_('initiator'))
     initiator_name = models.CharField(null=True, max_length=64, verbose_name=_('initiator name'))
+    initiated_at = models.DateTimeField(null=True, verbose_name=_('initiated datetime'))
     obj_name = models.CharField(null=True, max_length=64, verbose_name=_('obj name'))
     obj_key = models.CharField(null=True, max_length=64, verbose_name=_('obj key'))
     obj_status = models.CharField(null=True, max_length=64, verbose_name=_('obj status'))
     batch = models.CharField(null=True, max_length=36, verbose_name=_('batch'))
-    candidates = ArrayField(models.CharField(max_length=64),  null=True, verbose_name=_('candidates'))
+    data = JSONField(verbose_name=_('data'), null=True)
+    obj_associated_data = models.CharField(null=True, max_length=64, verbose_name=_('obj associated data'))
+    obj_associated_data_type = models.CharField(null=True, max_length=64, verbose_name=_('obj associated data type'))
+    company = models.CharField(null=True, max_length=64, verbose_name=_('company type'))
+    company_type = models.CharField(null=True, max_length=64, verbose_name=_('company type'))
+
+    objects = IsDeletedManager()
+    all_objects = models.Manager()
 
     class Meta:
         db_table = 'notice_backlog'

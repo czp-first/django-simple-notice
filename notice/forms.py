@@ -105,12 +105,29 @@ class PrivateForm(forms.Form, SimpleArrayField):
 
 class BacklogForm(forms.Form):
     """待办消息表单"""
+    batch = forms.CharField(required=False, max_length=64)
     is_done = forms.BooleanField(required=False)
-    receiver = SimpleArrayField(required=True, base_field=forms.CharField(required=False))
+    receivers = SimpleArrayField(required=True, base_field=forms.CharField(required=True))
     initiator = forms.CharField(required=False, max_length=64)
     initiator_name = forms.CharField(required=False, max_length=64)
+    initiated_at = forms.DateTimeField(required=False, input_formats=NOTICE_DATETIME_FORMAT)
     obj_name = forms.CharField(required=False, max_length=64)
     obj_key = forms.CharField(required=False, max_length=64)
     obj_status = forms.CharField(required=False, max_length=64)
-    handler = SimpleArrayField(required=False, base_field=forms.CharField(required=False))
+    handlers = SimpleArrayField(required=False, base_field=forms.CharField(required=False))
     candidates = SimpleArrayField(required=False, base_field=forms.CharField(required=False))
+    obj_associated_data = forms.CharField(required=False, max_length=64)
+    obj_associated_data_type = forms.CharField(required=False, max_length=64)
+    company = forms.CharField(required=False, max_length=64)
+    company_type = forms.CharField(required=False, max_length=64)
+
+
+class HandleBacklogForm(forms.Form):
+    batch = forms.CharField(required=True, max_length=64)
+    is_done = forms.BooleanField(required=False)
+    handler = forms.CharField(required=True, max_length=64)
+
+
+class HandleObjForm(forms.Form):
+    key = forms.CharField(required=True, max_length=64)
+    status = forms.CharField(required=True, max_length=64)
