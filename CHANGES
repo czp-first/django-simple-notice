@@ -1,6 +1,12 @@
 Version History
 ===============
 
+Version 0.2.6
+* fix JSONField
+
+Version 0.2.5
+* remakemigrations
+
 Version 0.2.4
 * fix backlog
 

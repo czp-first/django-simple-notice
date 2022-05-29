@@ -110,7 +110,7 @@ class BacklogForm(forms.Form):
     receivers = SimpleArrayField(required=True, base_field=forms.CharField(required=True))
     initiator = forms.CharField(required=False, max_length=64)
     initiator_name = forms.CharField(required=False, max_length=64)
-    initiated_at = forms.DateTimeField(required=False, input_formats=NOTICE_DATETIME_FORMAT)
+    initiated_at = forms.DateTimeField(required=False, input_formats=[NOTICE_DATETIME_FORMAT])
     obj_name = forms.CharField(required=False, max_length=64)
     obj_key = forms.CharField(required=False, max_length=64)
     obj_status = forms.CharField(required=False, max_length=64)

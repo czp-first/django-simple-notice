@@ -5,7 +5,7 @@
 @Time    : 2022-04-02 14:01:49
 """
 
-VERSION = (0, 2, 4)
+VERSION = (0, 2, 7)
 
 
 def get_version():
