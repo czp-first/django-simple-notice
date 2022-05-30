@@ -183,6 +183,9 @@ def list_backlog(page: int, size: int, params: dict, receiver: str):
                 'candidates': item.candidates if item.candidates else [],
                 'company': item.company,
                 'company_type': item.company_type,
+                'obj_associated_data': item.obj_associated_data,
+                'obj_associated_data_type': item.obj_associated_data_type,
+                'batch': item.batch,
             }
             for item in queryset.order_by('-id')[(page - 1) * size: page * size]
         ]
