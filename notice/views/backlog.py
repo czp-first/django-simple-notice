@@ -180,7 +180,9 @@ def list_backlog(page: int, size: int, params: dict, receiver: str):
                 'obj_status': item.obj_status,
                 'data': {} if not item.data else item.data,
                 'is_read': item.is_read,
-                'candidates': item.candidates if item.candidates else []
+                'candidates': item.candidates if item.candidates else [],
+                'company': item.company,
+                'company_type': item.company_type,
             }
             for item in queryset.order_by('-id')[(page - 1) * size: page * size]
         ]
