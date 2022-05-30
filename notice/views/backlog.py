@@ -78,12 +78,12 @@ def backlog(request: HttpRequest):
 def check_params(params: dict):
     """参数校验"""
 
-    backlog_type = params.get('backlog_type', 'all')
+    backlog_type = params.get('backlog_type')
     start = params.get('start')
     end = params.get('end')
     data_format = r'^\d{4}-\d{2}-\d{2}\s\d{1,2}:\d{1,2}:\d{1,2}$'
 
-    if not backlog_type or backlog_type not in ('all', 'undo', 'done'):
+    if backlog_type and backlog_type not in ('undo', 'done'):
         return False, ValidationFailed(ValidationFailedDetailEnum.BACKLOG_TYPE.value)
 
     if start:

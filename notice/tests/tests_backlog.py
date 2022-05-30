@@ -160,7 +160,14 @@ class TestGetBacklogs(TestCase):
 
     def test_success_backlog_type_all(self):
         """get all backlogs"""
-        params = self.get_params(backlog_type='all')
+        params = self.get_params()
+        resp = self.client_request(params)
+        resp_json = resp.json()
+        self.assertEqual(len(resp_json['items']), 4)
+
+    def test_success_backlog_type_all_1(self):
+        """get all backlogs"""
+        params = self.get_params(backlog_type='')
         resp = self.client_request(params)
         resp_json = resp.json()
         self.assertEqual(len(resp_json['items']), 4)
